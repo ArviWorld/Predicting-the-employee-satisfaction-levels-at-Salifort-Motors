@@ -112,14 +112,10 @@ that contribute to their leaving.
 
 For this project, the key stakeholders include the HR department and the senior leadership team, as they are directly involved in employee management and decision-making. The senior leadership team has tasked the data analyst with analyzing the dataset to come up with ideas for how to increase employee retention. To help with this, they would like you to build a machine learning model that predicts whether an employee will leave the company based on their department, number of projects, average monthly hours, and any other data points you deem helpful.
 
- Upon initial exploration of the dataset, most survey variables appear relevant to predictive modeling, though some may require feature engineering to enhance prediction accuracy. To carry out the analysis, I’m utilizing various Python packages for data handling, visualization, and modeling. Ethically, it’s important to remain mindful of potential biases in the recorded data—both during the analysis and when interpreting and presenting the results—to ensure fairness and accuracy.
-
-
 **Goals**\
-The primary objective is to identify and predict the underlying drivers contributing to employee turnover, which can help in formulating effective retention strategies. Goals in this project are to analyze the data collected by the HR
-department and to build a model that predicts whether or not an employee
-will leave the company.
+The primary objective is to identify and predict the underlying drivers contributing to employee turnover, which can help in formulating effective retention strategies. Goals in this project are to analyze the data collected by the HR department and to build a model that predicts whether or not an employee will leave the company.
 
+**Methodology**\
 For this project, the analyst chooses a method to approach this data
 challenge, either selecting a regression model or a tree-based machine
 learning model to predict whether an employee will leave the company.
@@ -148,8 +144,7 @@ machine learning models. Analysis such as,
   - Check for missing, duplicate values and outliers 
   - Visualizing the relationship within or between the data variables.
 
-## Load required libraries
-
+## Load required libraries\
 First, loading the libraries and packages that are needed for predicting
 the employee satisfaction project. The selected libraries provide
 functions for handling data, building and performing machine learning
@@ -174,6 +169,7 @@ py_config()
 # Operational Packages
 import numpy as np
 import pandas as pd
+import io
 import pickle 
 
 # Visualization packages
@@ -202,27 +198,7 @@ from sklearn.tree import plot_tree
 
 ```
 
-### Reflect on these questions as you complete the plan stage.
-
--   Who are your stakeholders for this project?
-    -   HR department, Senior leadership Team
--   What are you trying to solve or accomplish?
-    -   predicts the underlying drivers that contributes to the employee
-        turnover
--   What are your initial observations when you explore the data?
-    -   Most of the variables in the survey data align with prediction
-        variables but certain variables can be engineered for effective
-        predictions
--   What resources do you find yourself using as you complete this
-    stage? (Make sure to include the links.)
-    -   Resources need to achieve the objective includes the python
-        packages for operations, visualization, modelling packages
--   Do you have any ethical considerations in this stage?
-    -   Consider the bias in the recorded data during the analysis and
-        while presenting the results
-
-## Data Loading and Pre-processing
-
+## Data Loading and Pre-processing\
 ### Load and explore the data\
 To start the project, loading the dataset HR_capstone_dataset.csv, and
 analyse the basic of the dataset. The dataset represents 10 columns of
@@ -238,74 +214,59 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
 
 # Load CSV
-df = pd.read_csv(r"D:\Study\Machine Learning\Projects\R-Git\Completed projects for GitHub\Predicting-the-employee-satisfaction-levels-at-Salifort-Motors\Data\HR_capstone_dataset.csv")
+df0 = pd.read_csv(r"D:\Study\Machine Learning\Projects\R-Git\Completed projects for GitHub\Predicting-the-employee-satisfaction-levels-at-Salifort-Motors\Data\HR_capstone_dataset.csv")
 
 # Format first 5 rows like a kable table
-print(tabulate(df.head(), headers='keys'))
+print(tabulate(df0.head(), headers='keys', tablefmt='latex'))
 
 ```
 
-## Step 1. Imports
-
--   Import packages
--   Load dataset
-
-### Import packages
-
-### Load dataset
-
-`Pandas` is used to read a dataset called **`HR_capstone_dataset.csv`.**
-As shown in this cell, the dataset has been automatically loaded in for
-you. You do not need to download the .csv file, or provide more code, in
-order to access the dataset and proceed with this lab. Please continue
-with this activity by completing the following instructions.
+Upon initial exploration of the data set, most of the variables in the survey data align with prediction variables but certain variables can be engineered for effective predictions. Ethical considerations at this point, is the consideration of the bias in the recorded data both during the analysis and while interpreting and presenting the results to ensure fairness and accuracy. 
 
 
 
-## Step 2. Data Exploration (Initial EDA and data cleaning)
 
--   Understand your variables
--   Clean your dataset (missing data, redundant data, outliers)
 
-### Gather basic information about the data
+### Raw data Exploration\
+In this step, gaining a comprehensive understanding of the dataset and preparing it for modeling is essential. This involves reviewing all variables to understand their data types, distributions, and relevance to the target objective. 
 
 ``` {python}
 
 # Gather basic information about the data
-df0.info()
+# Create a StringIO buffer
+buffer = io.StringIO()
+
+# Capture the output of df.info() into the buffer
+df0.info(buf=buffer)
+
+# Get the content from the buffer
+info_str = buffer.getvalue()
+
+# Print the content
+print(info_str)
+
+# Print the descriptive statistics
+print(tabulate(df0.describe(), headers='keys', tablefmt='simple'))
 
 ```
+The `HR_capstone_dataset.csv` dataset contains 14999 row entries and 10 columns, out of which, 2 are float, 6 are integers and 2 are objects. Descriptive analysis of the dataset is shown here. Based on this,   
+  - Most of the employees work on an average of ~3.8 projects and ~201 horus per month.   
+  - Satisfaction levels range from 0.09 - 1 with a mean of ~0.61, while the last evaluation score is ~0.72.   
+  - Most employees have not had accidents or been promoted in the last 5 years.   
 
+### Data Cleaning\
+In this step, the `HR_capstone_dataset.csv` dataset is then cleaned by addressing missing values, removing redundant or duplicate entries, and identifying any anomalies or inconsistencies. Outliers that could potentially distort model performance is also detected and evaluated for appropriate handling. These steps ensures that the dataset was accurate, consistent, and ready for further analysis, laying a solid foundation for building reliable predictive models.
 
-
-### Gather descriptive statistics about the data
+**Rename columns**
+As a data cleaning step, rename the columns as needed. Standardizing the
+column names so that they are all in `snake_case`, correcting any column
+names that are misspelled, and making sure column names more concise as needed.
 
 ``` {python}
 
-# Gather descriptive statistics about the data
-df0.describe(include='all')
-
-```
-
-### Rename columns
-
-As a data cleaning step, rename the columns as needed. Standardize the
-column names so that they are all in `snake_case`, correct any column
-names that are misspelled, and make column names more concise as needed.
-
-``` python
 # Display all column names
 df0.columns
-```
 
-```         
-Index(['satisfaction_level', 'last_evaluation', 'number_project',
-       'average_montly_hours', 'time_spend_company', 'Work_accident', 'left',
-       'promotion_last_5years', 'Department', 'salary'],
-      dtype='object')
-```
-
-``` python
 # Rename columns as needed
 df = df0.copy()
 df = df0.rename(columns={'satisfaction_level':'satisfaction',
@@ -321,124 +282,48 @@ df = df0.rename(columns={'satisfaction_level':'satisfaction',
 
 # Display all column names after the update
 df.columns
+
 ```
+**Check missing values**
+Check for any missing values in the data. 
 
-```         
-Index(['satisfaction', 'last_eval', '#_projects', 'avg_mon_hrs', 'tenure',
-       'work_accident', 'left', 'promotion_<5yrs', 'department', 'salary'],
-      dtype='object')
-```
+``` {python}
 
-### Check missing values
-
-Check for any missing values in the data.
-
-``` python
 # Check for missing values
 df.isnull().sum()
+
 ```
+**Check duplicates**
+Checking for any duplicate entries in the data.
 
-```         
-satisfaction       0
-last_eval          0
-#_projects         0
-avg_mon_hrs        0
-tenure             0
-work_accident      0
-left               0
-promotion_<5yrs    0
-department         0
-salary             0
-dtype: int64
-```
+``` {python}
 
-### Check duplicates
-
-Check for any duplicate entries in the data.
-
-``` python
 # Check for duplicates
 df.duplicated().sum()
-```
 
-```         
-3008
-```
-
-``` python
 # Inspect some rows containing duplicates as needed
-df[df.duplicated()].head()
+print(df[df.duplicated()].head())
+
 ```
 
-<div>
 
-```{=html}
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
+``` {python}
 
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-```
-
-|   | satisfaction | last_eval | #\_projects | avg_mon_hrs | tenure | work_accident | left | promotion\_\<5yrs | department | salary |
-|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
-| 396 | 0.46 | 0.57 | 2 | 139 | 3 | 0 | 1 | 0 | sales | low |
-| 866 | 0.41 | 0.46 | 2 | 128 | 3 | 0 | 1 | 0 | accounting | low |
-| 1317 | 0.37 | 0.51 | 2 | 127 | 3 | 0 | 1 | 0 | sales | medium |
-| 1368 | 0.41 | 0.52 | 2 | 132 | 3 | 0 | 1 | 0 | RandD | low |
-| 1461 | 0.42 | 0.53 | 2 | 142 | 3 | 0 | 1 | 0 | sales | low |
-
-</div>
-
-``` python
 # Drop duplicates and save resulting dataframe in a new variable as needed
-df1 = df.drop_duplicates(keep='first')
+df = df.drop_duplicates(keep='first')
 
 # Display first few rows of new dataframe as needed
-df1.head()
+df.head()
+
 ```
 
-<div>
-
-```{=html}
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-```
-
-|   | satisfaction | last_eval | #\_projects | avg_mon_hrs | tenure | work_accident | left | promotion\_\<5yrs | department | salary |
-|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
-| 0 | 0.38 | 0.53 | 2 | 157 | 3 | 0 | 1 | 0 | sales | low |
-| 1 | 0.80 | 0.86 | 5 | 262 | 6 | 0 | 1 | 0 | sales | medium |
-| 2 | 0.11 | 0.88 | 7 | 272 | 4 | 0 | 1 | 0 | sales | medium |
-| 3 | 0.72 | 0.87 | 5 | 223 | 5 | 0 | 1 | 0 | sales | low |
-| 4 | 0.37 | 0.52 | 2 | 159 | 3 | 0 | 1 | 0 | sales | low |
-
-</div>
 
 ### Check outliers
 
 Check for outliers in the data.
 
-``` python
+``` {python}
 # Create a boxplot to visualize distribution of `tenure` and detect any outliers
 plt.figure(figsize=(16,6))
 plt.title('Detecting outliers for tenure (Boxplot)', fontsize=15)
@@ -448,9 +333,7 @@ sns.boxplot(x=df1['tenure'])
 plt.show()
 ```
 
-![png](output_33_0.png)
-
-``` python
+``` {python}
 # Determine the number of rows containing outliers
 
 # 25th Percentile for tenure
@@ -473,12 +356,6 @@ outliers = df1[(df1['tenure'] > upper_limit) | (df1['tenure'] < lower_limit)]
 
 # print the rows containing the outliers
 print(f'Number of rows containing outliers in tenure:', len(outliers))
-```
-
-```         
-Lower limit: 1.5
-Upper limit: 5.5
-Number of rows containing outliers in tenure: 824
 ```
 
 Certain types of models are more sensitive to outliers than others. When
@@ -508,7 +385,7 @@ outliers, based on the type of model you decide to use.
 Begin by understanding how many employees left and what percentage of
 all employees this figure represents.
 
-``` python
+``` {python}
 # Get numbers of people who left vs. stayed
 print(df['left'].value_counts())
 print()
