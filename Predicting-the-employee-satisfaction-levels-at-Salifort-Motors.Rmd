@@ -110,25 +110,23 @@ that contribute to their leaving.
 
 # Aim and Methodology of this Project {#aim-and-methodology-of-this-project}
 
-The senior leadership team has tasked the data analyst with analyzing
-the dataset to come up with ideas for how to increase employee
-retention. To help with this, they would like you to build a machine
-learning model that predicts whether an employee will leave the company
-based on their department, number of projects, average monthly hours,
-and any other data points you deem helpful.
+For this project, the key stakeholders include the HR department and the senior leadership team, as they are directly involved in employee management and decision-making. The senior leadership team has tasked the data analyst with analyzing the dataset to come up with ideas for how to increase employee retention. To help with this, they would like you to build a machine learning model that predicts whether an employee will leave the company based on their department, number of projects, average monthly hours, and any other data points you deem helpful.
+
+ Upon initial exploration of the dataset, most survey variables appear relevant to predictive modeling, though some may require feature engineering to enhance prediction accuracy. To carry out the analysis, I’m utilizing various Python packages for data handling, visualization, and modeling. Ethically, it’s important to remain mindful of potential biases in the recorded data—both during the analysis and when interpreting and presenting the results—to ensure fairness and accuracy.
+
 
 **Goals**\
-Goals in this project are to analyze the data collected by
-the HR department and to build a model that predicts whether or not an
-employee will leave the company.
+The primary objective is to identify and predict the underlying drivers contributing to employee turnover, which can help in formulating effective retention strategies. Goals in this project are to analyze the data collected by the HR
+department and to build a model that predicts whether or not an employee
+will leave the company.
 
 For this project, the analyst chooses a method to approach this data
 challenge, either selecting a regression model or a tree-based machine
 learning model to predict whether an employee will leave the company.
 The following methodology was undertaken for this project,
 
--    Raw data - HR_capstone_dataset.csv from the HR department is used
-    to assess the needs of the Senior leadership team.
+-   Raw data - HR_capstone_dataset.csv from the HR department is used to
+    assess the needs of the Senior leadership team.
 
 -   The merged data set is split into 70% training and 30% test data
     which is used to train and predict using machine learning models.
@@ -142,13 +140,16 @@ The following methodology was undertaken for this project,
 
 This project uses a dataset called HR_capstone_dataset.csv, which is
 downloaded from the Kaggle website
-[here](https://www.kaggle.com/datasets/mfaisalqureshi/hr-analytics-and-job-prediction?select=HR_comma_sep.csv). In the EDA, the dataset is analysed and prepared for building the machine learning models. Analysis such as, 
-- Loading the required packages and the data set
-- Checking the descriptive statistics
-- Check for missing, duplicate values and outliers
-- Visualizing the relationship within or between the data variables.
+[here](https://www.kaggle.com/datasets/mfaisalqureshi/hr-analytics-and-job-prediction?select=HR_comma_sep.csv).
+In the EDA, the dataset is analysed and prepared for building the
+machine learning models. Analysis such as, 
+  - Loading the required packages and the data set 
+  - Checking the descriptive statistics 
+  - Check for missing, duplicate values and outliers 
+  - Visualizing the relationship within or between the data variables.
 
 ## Load required libraries
+
 First, loading the libraries and packages that are needed for predicting
 the employee satisfaction project. The selected libraries provide
 functions for handling data, building and performing machine learning
@@ -159,21 +160,27 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(reticulate)
 
+# Use your virtual environment (adjust the path if needed)
+use_virtualenv("~/.virtualenvs/r-reticulate", required = TRUE)
+
+# Confirm it's using the correct Python
+py_config()
+
 ```
 
-
 ```{python import_packages, message=FALSE, warning=FALSE}
-
 
 # Import packages
 # Operational Packages
 import numpy as np
 import pandas as pd
 import pickle 
-  
+
 # Visualization packages
 import matplotlib.pyplot as plt
 import seaborn as sns
+from IPython.display import display
+from tabulate import tabulate
 
 # Modelling packages
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -216,17 +223,26 @@ from sklearn.tree import plot_tree
 
 ## Data Loading and Pre-processing
 
-### Load and explore the data
-To start the project, loading the dataset HR_capstone_dataset.csv, and analyse the basic of the dataset. The dataset represents 10 columns of self-reported information from employees of a fictitious multinational vehicle manufacturing corporation. The dataset that you'll be using in this lab contains 15,000 rows and 10 columns for the variables listed below.
+### Load and explore the data\
+To start the project, loading the dataset HR_capstone_dataset.csv, and
+analyse the basic of the dataset. The dataset represents 10 columns of
+self-reported information from employees of a fictitious multinational
+vehicle manufacturing corporation. The dataset that you'll be using in
+this lab contains 15,000 rows and 10 columns for the variables listed
+below.
 
-``` {python}
+```{python}
 
 # Load dataset into a dataframe
 pd.set_option('display.max_columns', None)
-df0 = pd.read_csv("HR_capstone_dataset.csv")
+pd.set_option('display.width', None)
 
-# Display first few rows of the dataframe
-df0.head()
+# Load CSV
+df = pd.read_csv(r"D:\Study\Machine Learning\Projects\R-Git\Completed projects for GitHub\Predicting-the-employee-satisfaction-levels-at-Salifort-Motors\Data\HR_capstone_dataset.csv")
+
+# Format first 5 rows like a kable table
+print(tabulate(df.head(), headers='keys'))
+
 ```
 
 ## Step 1. Imports
@@ -246,16 +262,6 @@ with this activity by completing the following instructions.
 
 
 
-|   | satisfaction_level | last_evaluation | number_project | average_montly_hours | time_spend_company | Work_accident | left | promotion_last_5years | Department | salary |
-|----|----|----|----|----|----|----|----|----|----|----|
-| 0 | 0.38 | 0.53 | 2 | 157 | 3 | 0 | 1 | 0 | sales | low |
-| 1 | 0.80 | 0.86 | 5 | 262 | 6 | 0 | 1 | 0 | sales | medium |
-| 2 | 0.11 | 0.88 | 7 | 272 | 4 | 0 | 1 | 0 | sales | medium |
-| 3 | 0.72 | 0.87 | 5 | 223 | 5 | 0 | 1 | 0 | sales | low |
-| 4 | 0.37 | 0.52 | 2 | 159 | 3 | 0 | 1 | 0 | sales | low |
-
-</div>
-
 ## Step 2. Data Exploration (Initial EDA and data cleaning)
 
 -   Understand your variables
@@ -263,71 +269,23 @@ with this activity by completing the following instructions.
 
 ### Gather basic information about the data
 
-``` python
+``` {python}
+
 # Gather basic information about the data
 df0.info()
+
 ```
 
-```         
-<class 'pandas.core.frame.DataFrame'>
-RangeIndex: 14999 entries, 0 to 14998
-Data columns (total 10 columns):
- #   Column                 Non-Null Count  Dtype  
----  ------                 --------------  -----  
- 0   satisfaction_level     14999 non-null  float64
- 1   last_evaluation        14999 non-null  float64
- 2   number_project         14999 non-null  int64  
- 3   average_montly_hours   14999 non-null  int64  
- 4   time_spend_company     14999 non-null  int64  
- 5   Work_accident          14999 non-null  int64  
- 6   left                   14999 non-null  int64  
- 7   promotion_last_5years  14999 non-null  int64  
- 8   Department             14999 non-null  object 
- 9   salary                 14999 non-null  object 
-dtypes: float64(2), int64(6), object(2)
-memory usage: 1.1+ MB
-```
+
 
 ### Gather descriptive statistics about the data
 
-``` python
+``` {python}
+
 # Gather descriptive statistics about the data
 df0.describe(include='all')
+
 ```
-
-<div>
-
-```{=html}
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-```
-
-|   | satisfaction_level | last_evaluation | number_project | average_montly_hours | time_spend_company | Work_accident | left | promotion_last_5years | Department | salary |
-|----|----|----|----|----|----|----|----|----|----|----|
-| count | 14999.000000 | 14999.000000 | 14999.000000 | 14999.000000 | 14999.000000 | 14999.000000 | 14999.000000 | 14999.000000 | 14999 | 14999 |
-| unique | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 10 | 3 |
-| top | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | sales | low |
-| freq | NaN | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 4140 | 7316 |
-| mean | 0.612834 | 0.716102 | 3.803054 | 201.050337 | 3.498233 | 0.144610 | 0.238083 | 0.021268 | NaN | NaN |
-| std | 0.248631 | 0.171169 | 1.232592 | 49.943099 | 1.460136 | 0.351719 | 0.425924 | 0.144281 | NaN | NaN |
-| min | 0.090000 | 0.360000 | 2.000000 | 96.000000 | 2.000000 | 0.000000 | 0.000000 | 0.000000 | NaN | NaN |
-| 25% | 0.440000 | 0.560000 | 3.000000 | 156.000000 | 3.000000 | 0.000000 | 0.000000 | 0.000000 | NaN | NaN |
-| 50% | 0.640000 | 0.720000 | 4.000000 | 200.000000 | 3.000000 | 0.000000 | 0.000000 | 0.000000 | NaN | NaN |
-| 75% | 0.820000 | 0.870000 | 5.000000 | 245.000000 | 4.000000 | 0.000000 | 0.000000 | 0.000000 | NaN | NaN |
-| max | 1.000000 | 1.000000 | 7.000000 | 310.000000 | 10.000000 | 1.000000 | 1.000000 | 1.000000 | NaN | NaN |
-
-</div>
 
 ### Rename columns
 
@@ -431,7 +389,7 @@ df[df.duplicated()].head()
 ```
 
 |   | satisfaction | last_eval | #\_projects | avg_mon_hrs | tenure | work_accident | left | promotion\_\<5yrs | department | salary |
-|----|----|----|----|----|----|----|----|----|----|----|
+|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
 | 396 | 0.46 | 0.57 | 2 | 139 | 3 | 0 | 1 | 0 | sales | low |
 | 866 | 0.41 | 0.46 | 2 | 128 | 3 | 0 | 1 | 0 | accounting | low |
 | 1317 | 0.37 | 0.51 | 2 | 127 | 3 | 0 | 1 | 0 | sales | medium |
@@ -467,7 +425,7 @@ df1.head()
 ```
 
 |   | satisfaction | last_eval | #\_projects | avg_mon_hrs | tenure | work_accident | left | promotion\_\<5yrs | department | salary |
-|----|----|----|----|----|----|----|----|----|----|----|
+|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
 | 0 | 0.38 | 0.53 | 2 | 157 | 3 | 0 | 1 | 0 | sales | low |
 | 1 | 0.80 | 0.86 | 5 | 262 | 6 | 0 | 1 | 0 | sales | medium |
 | 2 | 0.11 | 0.88 | 7 | 272 | 4 | 0 | 1 | 0 | sales | medium |
@@ -597,7 +555,7 @@ df.head()
 ```
 
 |   | satisfaction | last_eval | #\_projects | avg_mon_hrs | tenure | work_accident | left | promotion\_\<5yrs | department | salary |
-|----|----|----|----|----|----|----|----|----|----|----|
+|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
 | 0 | 0.38 | 0.53 | 2 | 157 | 3 | 0 | 1 | 0 | sales | low |
 | 1 | 0.80 | 0.86 | 5 | 262 | 6 | 0 | 1 | 0 | sales | medium |
 | 2 | 0.11 | 0.88 | 7 | 272 | 4 | 0 | 1 | 0 | sales | medium |
