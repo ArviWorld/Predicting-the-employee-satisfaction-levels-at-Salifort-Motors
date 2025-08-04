@@ -4,7 +4,6 @@ subtitle: "Providing data-driven suggestions for HR at Salifort Motors"
 tutorial_by: "Google Advanced Data Analytics - Capstone Project"
 author: "Aravindh Venkatraman"
 date: "30 July 2025"
-always_allow_html: true
 output:
   html_document:
     toc: true
@@ -12,8 +11,8 @@ output:
     number_sections: true
     toc_depth: 3
     df_print: paged
-    theme: readable
-    highlight: tango
+    code_folding: show
+    theme: united
 editor_options:
   markdown:
     wrap: 72
@@ -190,7 +189,8 @@ import pickle
 # Visualization packages
 import matplotlib.pyplot as plt
 import seaborn as sns
-from IPython.display import display
+from IPython.display import HTML
+from IPython.display import display, Markdown
 from tabulate import tabulate
 
 # Modelling packages
@@ -232,7 +232,7 @@ pd.set_option('display.width', None)
 df0 = pd.read_csv(r"D:\Study\Machine Learning\Projects\R-Git\Completed projects for GitHub\Predicting-the-employee-satisfaction-levels-at-Salifort-Motors\Data\HR_capstone_dataset.csv")
 
 # Format first 5 rows like a kable table
-print(tabulate(df0.head(), headers='keys', tablefmt='latex'))
+print(tabulate(df0.head(), headers='keys', tablefmt='html'))
 
 ```
 
@@ -254,10 +254,10 @@ df0.info(buf=buffer)
 info_str = buffer.getvalue()
 
 # Print the content
-print(info_str)
+display(Markdown(f"```\n{info_str}\n```"))
 
 # Print the descriptive statistics
-print(tabulate(df0.describe(), headers='keys', tablefmt='simple'))
+print(tabulate(df0.describe(), headers='keys', tablefmt='html'))
 
 ```
 
@@ -298,7 +298,7 @@ needed.
 ```{python eda rename col}
 
 # Display all column names
-df0.columns
+list(df0.columns)
 
 # Rename columns as needed
 df = df0.copy()
@@ -314,7 +314,7 @@ df = df0.rename(columns={'satisfaction_level':'satisfaction',
 
 
 # Display all column names after the update
-df.columns
+list(df.columns)
 
 ```
 
@@ -326,7 +326,7 @@ missing values in this dataset.
 ```{python eda null}
 
 # Check for missing values
-df.isnull().sum()
+print(tabulate(df.isnull().sum().reset_index().rename(columns={'index': 'Column', 0: 'Missing Values'}), headers='keys', tablefmt='html'))
 
 ```
 
@@ -344,13 +344,13 @@ predictions.
 df.duplicated().sum()
 
 # Inspect some rows containing duplicates as needed
-print(tabulate(df[df.duplicated()].head(), headers='keys', tablefmt='simple'))
+print(tabulate(df[df.duplicated()].head(), headers='keys', tablefmt='html'))
 
 # Drop duplicates and save resulting dataframe in a new variable as needed
 df1 = df.drop_duplicates(keep='first')
 
 # Display first few rows of new dataframe as needed
-print(tabulate(df1.head(), headers='keys', tablefmt='simple'))
+print(tabulate(df1.head(), headers='keys', tablefmt='html'))
 
 ```
 
@@ -418,12 +418,14 @@ Beginning by understanding how many employees left and what percentage
 of all employees this figure represents.
 
 ```{python eda class}
+
 # Get numbers of people who left vs. stayed
 print(df['left'].value_counts())
 print()
 # Get percentages of people who left vs. stayed
 ### YOUR CODE HERE ###
 print(df['left'].value_counts(normalize=True))
+
 ```
 
 Examining variables that are interesting to the relevance of the project
@@ -729,7 +731,7 @@ df_lr.shape
 
 # Building the Models
 
-## Linear Regression
+## Logistic Regression
 
 ```{python var selection}
 # Setting the 'y' variable
@@ -800,12 +802,8 @@ print(classification_report(y_test, y_pred, target_names=row_names))
 
 ```
 
-Classification report shows,
-
--   Precision = 79%
--   Recall = 83%
--   F1 score = 80%
--   Accuracy = 83%
+Classification report shows,\
+- Precision = 79% - Recall = 83% - F1 score = 80% - Accuracy = 83%
 
 The model shows very low scores in the objective which is the importance
 to predict employees who will leave. Hence, we can try other
@@ -952,6 +950,7 @@ rf1.best_score_
 # Get all CV scores
 rf1_cv_results = make_results('Random Forest 1 CV', rf1, 'auc')
 results = pd.concat([rf1_cv_results,dtree1_cv_results], axis=0)
+results.reset_index(drop=True, inplace=True)
 results
 
 ```
@@ -961,10 +960,12 @@ results
 | 0   | Random Forest 1 CV | 0.950023  | 0.915614 | 0.932467 | 0.977983 | 0.980425 |
 | 0   | Decision Tree 1 CV | 0.914490  | 0.916279 | 0.915345 | 0.971867 | 0.969867 |
 
-Based on the model training results, - Random Forest Model scores better
-than the Decision Tree, exception is the recall but not too significant
-just 0.001 lower. - Random Forest Model performs well than the Decision
-Tree and the test set can be evaluated using the Random Forest.
+Based on the model training results,
+
+-   Random Forest Model scores better than the Decision Tree, exception
+    is the recall but not too significant just 0.001 lower.
+-   Random Forest Model performs well than the Decision Tree and the
+    test set can be evaluated using the Random Forest.
 
 ```{python testscores func}
 def get_scores(model_name:str, model, X_test_data, y_test_data):
@@ -1130,6 +1131,7 @@ dtree2.best_score_
 # Get all CV scores
 dtree2_cv_results = make_results('Decision Tree 2 CV', dtree2, 'auc')
 results = pd.concat([dtree1_cv_results,dtree2_cv_results,rf1_cv_results], axis=0)
+results.reset_index(drop=True, inplace=True)
 results
 ```
 
@@ -1176,6 +1178,7 @@ rf2.best_score_
 # Get all CV scores
 rf2_cv_results = make_results('Random Forest 2 CV', rf2, 'auc')
 results = pd.concat([dtree1_cv_results,dtree2_cv_results,rf1_cv_results,rf2_cv_results], axis=0)
+results.reset_index(drop=True, inplace=True)
 results
 ```
 
@@ -1199,6 +1202,7 @@ Random Forest Model,
 # Get predictions on test data
 rf2_test_scores = get_scores('Random Forest 2 Test', rf2, X_test, y_test)
 test_results = pd.concat([rf1_test_scores, rf2_test_scores], axis=0)
+test_results.reset_index(drop=True, inplace=True)
 test_results
 ```
 
@@ -1224,12 +1228,11 @@ disp.plot(values_format='');
 ```
 
 A perfect model would yield all true negatives and true positives, and
-no false negatives or false positives.
-
-In this case, Model predicts more false positives than false negatives,
-which means that the employees are at risk of getting fired or leaving
-voluntarily but that is not the case. Although it still is a strong
-model for predicting the employees that stay
+no false negatives or false positives. In this case, Model predicts more
+false positives than false negatives, which means that the employees are
+at risk of getting fired or leaving voluntarily but that is not the
+case. Although it still is a strong model for predicting the employees
+that stay
 
 ### Plotting the Decision Tree
 
