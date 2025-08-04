@@ -10,9 +10,9 @@ output:
     toc_float: true
     number_sections: true
     toc_depth: 3
-    df_print: paged
+    df_print: DT::datatable
     code_folding: show
-    theme: united
+    theme: default
 editor_options:
   markdown:
     wrap: 72
