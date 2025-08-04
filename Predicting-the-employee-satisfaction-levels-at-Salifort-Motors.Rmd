@@ -10,7 +10,7 @@ output:
     toc_float: true
     number_sections: true
     toc_depth: 3
-    df_print: DT::datatable
+    df_print: tibble
     code_folding: show
     theme: default
 editor_options:
@@ -215,7 +215,7 @@ from sklearn.tree import plot_tree
 
 ## Data Loading and Pre-processing
 
-### Data Loading and exploration
+### Data Loading 
 
 To start the project, loading the dataset `HR_capstone_dataset.csv`, and
 analyse the basic of the dataset. The dataset represents 10 columns of
@@ -232,7 +232,7 @@ pd.set_option('display.width', None)
 df0 = pd.read_csv(r"D:\Study\Machine Learning\Projects\R-Git\Completed projects for GitHub\Predicting-the-employee-satisfaction-levels-at-Salifort-Motors\Data\HR_capstone_dataset.csv")
 
 # Format first 5 rows like a kable table
-print(tabulate(df0.head(), headers='keys', tablefmt='html'))
+df0.head().style.set_table_attributes("class='table table-sm'")
 
 ```
 
@@ -257,7 +257,7 @@ info_str = buffer.getvalue()
 display(Markdown(f"```\n{info_str}\n```"))
 
 # Print the descriptive statistics
-print(tabulate(df0.describe(), headers='keys', tablefmt='html'))
+df0.describe().style.set_table_attributes("class='table table-sm'")
 
 ```
 
@@ -278,7 +278,7 @@ Descriptive analysis of the dataset is shown here. Based on this,
 -   Most employees have not had accidents or been promoted in the last 5
     years.
 
-### Data Cleaning
+### Data Exploration
 
 In this step, the `HR_capstone_dataset.csv` dataset is then cleaned by
 addressing missing values, removing redundant or duplicate entries, and
@@ -326,7 +326,7 @@ missing values in this dataset.
 ```{python eda null}
 
 # Check for missing values
-print(tabulate(df.isnull().sum().reset_index().rename(columns={'index': 'Column', 0: 'Missing Values'}), headers='keys', tablefmt='html'))
+df.isnull().sum().reset_index().style.set_table_attributes("class='table table-sm'")
 
 ```
 
@@ -344,13 +344,13 @@ predictions.
 df.duplicated().sum()
 
 # Inspect some rows containing duplicates as needed
-print(tabulate(df[df.duplicated()].head(), headers='keys', tablefmt='html'))
+df[df.duplicated()].head().style.set_table_attributes("class='table table-sm'")
 
 # Drop duplicates and save resulting dataframe in a new variable as needed
 df1 = df.drop_duplicates(keep='first')
 
 # Display first few rows of new dataframe as needed
-print(tabulate(df1.head(), headers='keys', tablefmt='html'))
+df1.head().style.set_table_attributes("class='table table-sm'")
 
 ```
 
@@ -412,7 +412,7 @@ print(f'Number of rows containing outliers in tenure:', len(outliers))
     stage? (Make sure to include the links.)
 -   Do you have any ethical considerations in this stage?
 
-### Data exploration and visualization
+### Data Visualization
 
 Beginning by understanding how many employees left and what percentage
 of all employees this figure represents.
@@ -423,8 +423,7 @@ of all employees this figure represents.
 print(df['left'].value_counts())
 print()
 # Get percentages of people who left vs. stayed
-### YOUR CODE HERE ###
-print(df['left'].value_counts(normalize=True))
+df['left'].value_counts(normalize=True)
 
 ```
 
@@ -432,7 +431,7 @@ Examining variables that are interesting to the relevance of the project
 and create plots to visualize relationships between variables in the
 data.
 
--   Correlation heat maps
+-   Correlation heat maps;
 -   Tenure vs satisfaction; tenure vs left distribution;
 -   #\_project vs avg_mon_hrs;
 -   distribution of #\_projects;
@@ -446,7 +445,7 @@ data.
 numeric_df = df1.select_dtypes(include=['number'])
 
 # Plot a correlation heatmap
-plt.figure(figsize=(16, 9))
+plt.figure(figsize=(20, 12))
 heatmap = sns.heatmap(numeric_df.corr(), vmin=-1, vmax=1, annot=True, cmap=sns.color_palette("vlag", as_cmap=True))
 heatmap.set_title('Correlation Heatmap', fontdict={'fontsize':14}, pad=12);
 plt.show()
@@ -464,7 +463,7 @@ plt.show()
 ```{python vis2}
 # PLots to analyse Tenure vs satisfaction; tenure vs left distribution
 # Set figure and axes
-fig, ax = plt.subplots(1, 2, figsize = (18,6))
+fig, ax = plt.subplots(1, 2, figsize = (20,8))
 
 # Tenure vs left distribution
 tenure_stay = df1[df1['left']==0]['tenure']
@@ -497,7 +496,7 @@ which might be due to promotions to higher ranks in the company
 
 ```{python vis3}
 # plot for #_project vs avg_mon_hrs; distribution of #_projects 
-fig, ax = plt.subplots(1, 2, figsize = (18,6))
+fig, ax = plt.subplots(1, 2, figsize = (20,8))
 
 # distribution of #_projects
 projects_stay = df1[df1['left']==0]['#_projects']
@@ -539,7 +538,7 @@ Employees who left the company,
 ```{python vis4}
 
 # Plots for satisfaction vs salary; satisfaction vs last_eval; 
-fig, ax = plt.subplots(1, 2, figsize = (18,6))
+fig, ax = plt.subplots(1, 2, figsize = (20,8))
 
 # plot for satisfaction vs salary
 sns.boxplot(data=df1, x='satisfaction', y='salary', hue='left', 
@@ -573,7 +572,7 @@ with the previous box plots.
 ```{python vis5}
 
 # Plot for avg_mon_hrs vs last_eval; avg_mon_hrs vs promotion_<5yrs
-fig, ax = plt.subplots(1, 2, figsize = (18,6))
+fig, ax = plt.subplots(1, 2, figsize = (20,8))
 
 # Plot for avg_mon_hrs vs promotion_<5yrs
 sns.scatterplot(data=df1, x='avg_mon_hrs', y='promotion_<5yrs', hue='left', ax=ax[0])
@@ -603,7 +602,7 @@ Based on the plot,
 ```{python vis6}
 
 # Plot for distribution of employee who left by department
-plt.figure(figsize=(11,8))
+plt.figure(figsize=(13,10))
 sns.histplot(data=df1, x='department', hue='left', discrete=1, 
              hue_order=[0, 1], multiple='dodge', shrink=.5)
 plt.title('Employees distribution classified by department', fontsize=12)
@@ -721,7 +720,7 @@ enc_df.head()
 # Removing the outliers in the tenure and saving it in a new dataframe
 df_lr = enc_df[(enc_df['tenure'] >= lower_limit) & (enc_df['tenure'] <= upper_limit)]
 
-df_lr.head().reset_index(drop=True)
+df_lr.head().reset_index(drop=True).style.set_table_attributes("class='table table-sm'")
 df_lr.shape
 ```
 
@@ -798,7 +797,15 @@ bit of balance split
 
 # Create classification report for logistic regression model
 row_names = ['Predicted would not leave', 'Predicted would leave']
-print(classification_report(y_test, y_pred, target_names=row_names))
+
+# Generate report as dict
+report_dict = classification_report(y_test, y_pred, target_names=row_names, output_dict=True)
+
+# Convert to DataFrame
+report_df = pd.DataFrame(report_dict).transpose()
+
+# Style as a Bootstrap table (if rendering to HTML)
+report_df.style.set_table_attributes("class='table table-sm'")
 
 ```
 
@@ -904,7 +911,7 @@ def make_results(model_name:str, model_object, metric:str):
 ```{python dt1 results}
 # Get all CV scores
 dtree1_cv_results = make_results('Decision Tree 1 CV', dtree1, 'auc')
-dtree1_cv_results
+dtree1_cv_results.style.set_table_attributes("class='table table-sm'")
 ```
 
 The metrics scores are very high. The model performance is very good,
@@ -951,7 +958,7 @@ rf1.best_score_
 rf1_cv_results = make_results('Random Forest 1 CV', rf1, 'auc')
 results = pd.concat([rf1_cv_results,dtree1_cv_results], axis=0)
 results.reset_index(drop=True, inplace=True)
-results
+results.style.set_table_attributes("class='table table-sm'")
 
 ```
 
@@ -1004,7 +1011,7 @@ def get_scores(model_name:str, model, X_test_data, y_test_data):
 ```{python rf1 ts}
 # Get predictions on test data
 rf1_test_scores = get_scores('Random Forest 1 Test', rf1, X_test, y_test)
-rf1_test_scores
+rf1_test_scores.style.set_table_attributes("class='table table-sm'")
 ```
 
 |     | model                | precision | recall   | f1       | accuracy | AUC      |
@@ -1035,7 +1042,7 @@ as overworked might help improve the models prediction
 df2 = enc_df.drop('satisfaction', axis=1)
 
 # Display first few rows of new dataframe
-df2.head()
+df2.head().style.set_table_attributes("class='table table-sm'")
 ```
 
 ```{python fe2}
@@ -1050,7 +1057,7 @@ print('Min hours:', df2['overworked'].min())
 df2['overworked'] = (df2['overworked'] > 175).astype(int)
 
 # Display first few rows of new column
-df2['overworked'].head()
+df2[['overworked']].head().style.set_table_attributes("class='table table-sm'")
 ```
 
 ```         
@@ -1079,7 +1086,7 @@ Name: overworked, dtype: int64
 df2 = df2.drop('avg_mon_hrs', axis=1)
 
 # Display first few rows of resulting dataframe
-df2.head()
+df2.head().style.set_table_attributes("class='table table-sm'")
 ```
 
 ```{python m2 var selc}
@@ -1132,7 +1139,7 @@ dtree2.best_score_
 dtree2_cv_results = make_results('Decision Tree 2 CV', dtree2, 'auc')
 results = pd.concat([dtree1_cv_results,dtree2_cv_results,rf1_cv_results], axis=0)
 results.reset_index(drop=True, inplace=True)
-results
+results.style.set_table_attributes("class='table table-sm'")
 ```
 
 ### Random Forest 2
@@ -1179,7 +1186,7 @@ rf2.best_score_
 rf2_cv_results = make_results('Random Forest 2 CV', rf2, 'auc')
 results = pd.concat([dtree1_cv_results,dtree2_cv_results,rf1_cv_results,rf2_cv_results], axis=0)
 results.reset_index(drop=True, inplace=True)
-results
+results.style.set_table_attributes("class='table table-sm'")
 ```
 
 |     | model              | precision | recall   | F1       | accuracy | auc      |
@@ -1203,7 +1210,7 @@ Random Forest Model,
 rf2_test_scores = get_scores('Random Forest 2 Test', rf2, X_test, y_test)
 test_results = pd.concat([rf1_test_scores, rf2_test_scores], axis=0)
 test_results.reset_index(drop=True, inplace=True)
-test_results
+test_results.style.set_table_attributes("class='table table-sm'")
 ```
 
 |     | model                | precision | recall   | f1       | accuracy | AUC      |
@@ -1257,7 +1264,7 @@ dtree2_importances = dtree2_importances.sort_values(by='gini_importance', ascend
 
 # Only extract the features with importances > 0
 dtree2_importances = dtree2_importances[dtree2_importances['gini_importance'] != 0]
-dtree2_importances
+dtree2_importances.style.set_table_attributes("class='table table-sm'")
 ```
 
 |                      | gini_importance |
