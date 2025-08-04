@@ -745,18 +745,19 @@ enc_df['salary'] = enc_df['salary'].map(salary_map)
 
 # Encoding the `department` with dummy variables
 enc_df = pd.get_dummies(enc_df, drop_first=False)
-enc_df.head()
+enc_df.head().style.set_table_attributes("class='table table-sm'")
 
 # Removing the outliers in the tenure and saving it in a new dataframe
 df_lr = enc_df[(enc_df['tenure'] >= lower_limit) & (enc_df['tenure'] <= upper_limit)]
 
 df_lr.head().reset_index(drop=True).style.set_table_attributes("class='table table-sm'")
-df_lr.shape
+list(df_lr.shape)
+
 ```
 
 ## Logistic Regression
 
-Logistice regression is a supervised machine learning algorithm used for
+Logistic regression is a supervised machine learning algorithm used for
 classification problems, especially when the target variable is binary.
 Unlike linear regression, which is used to predict continuous outcomes,
 logistic regression estimates the probability that a given input belongs
@@ -825,7 +826,6 @@ Model accurately predicts,
 df_lr['left'].value_counts(normalize=True)
 
 ```
-
 The data shows 83% - 17% split and shows imbalance. The class
 distribution is imbalanced, with only 17% of the data representing
 employees who left. This imbalance may contribute to the model’s bias
@@ -1212,8 +1212,7 @@ dtree2.best_score_
 # Get all CV scores
 dtree2_cv_results = make_results('Decision Tree 2 CV', dtree2, 'auc')
 results = pd.concat([dtree1_cv_results,dtree2_cv_results,rf1_cv_results], axis=0)
-results.reset_index(drop=True, inplace=True)
-results.style.set_table_attributes("class='table table-sm'")
+results.reset_index(drop=True, inplace=True).style.set_table_attributes("class='table table-sm'")
 
 ```
 
@@ -1263,19 +1262,9 @@ rf2.best_score_
 # Get all CV scores
 rf2_cv_results = make_results('Random Forest 2 CV', rf2, 'auc')
 results = pd.concat([dtree1_cv_results,dtree2_cv_results,rf1_cv_results,rf2_cv_results], axis=0)
-results.reset_index(drop=True, inplace=True)
-results.style.set_table_attributes("class='table table-sm'")
+results.reset_index(drop=True, inplace=True).style.set_table_attributes("class='table table-sm'")
 
 ```
-
-|     | model              | precision | recall   | F1       | accuracy | auc      |
-|-----|--------------------|-----------|----------|----------|----------|----------|
-| 0   | Decision Tree 1 CV | 0.914490  | 0.916279 | 0.915345 | 0.971867 | 0.969867 |
-| 0   | Decision Tree 2 CV | 0.856693  | 0.903553 | 0.878882 | 0.958523 | 0.958675 |
-| 0   | Random Forest 1 CV | 0.950023  | 0.915614 | 0.932467 | 0.977983 | 0.980425 |
-| 0   | Random Forest 2 CV | 0.866758  | 0.878754 | 0.872407 | 0.957411 | 0.964810 |
-
-</div>
 
 Based on the training results for the two rounds of Decision Tree and
 Random Forest Model,
@@ -1293,14 +1282,6 @@ test_results.reset_index(drop=True, inplace=True)
 test_results.style.set_table_attributes("class='table table-sm'")
 
 ```
-
-|     | model                | precision | recall   | f1       | accuracy | AUC      |
-|-----|----------------------|-----------|----------|----------|----------|----------|
-| 0   | Random Forest 1 Test | 0.964211  | 0.919679 | 0.941418 | 0.980987 | 0.956439 |
-| 0   | Random Forest 2 Test | 0.870406  | 0.903614 | 0.886700 | 0.961641 | 0.938407 |
-
-</div>
-
 Plotting a Confusion Matrix to visualize the model's predictions on the
 test set
 
