@@ -150,7 +150,7 @@ downloaded from the Kaggle website
 [here](https://www.kaggle.com/datasets/mfaisalqureshi/hr-analytics-and-job-prediction?select=HR_comma_sep.csv).
 In the EDA, the dataset is analysed and prepared for building the
 machine learning models. Analysis such as, - Loading the required
-packages and the data set 
+packages and the data set
 
 -   Checking the descriptive statistics
 -   Check for missing, duplicate values and outliers
@@ -320,8 +320,7 @@ list(df.columns)
 
 **Check missing values**
 
-Checking for any missing values in the data. There appears to be no
-missing values in this dataset.
+Checking for any missing values in the data. 
 
 ```{python eda null}
 
@@ -330,13 +329,11 @@ df.isnull().sum().reset_index().style.set_table_attributes("class='table table-s
 
 ```
 
+There appears to be no missing values in this dataset.
+
 **Check duplicates**
 
-Checking for any duplicate entries in the data. Based on the duplicate
-data set, there are several continuous variables across all the 10
-columns which is very highly likely that these observations are
-duplicates. Therefore dropping them will help in making accurate
-predictions.
+Checking for any duplicate entries in the data. 
 
 ```{python eda duplicates}
 
@@ -354,6 +351,8 @@ df1.head().style.set_table_attributes("class='table table-sm'")
 
 ```
 
+Based on the duplicate data set, there are several continuous variables across all the 10 columns which is very highly likely that these observations are duplicates. Therefore dropping them will help in making accurate predictions.
+
 **Check outliers**
 
 Checking for outliers in the data. Certain types of models are more
@@ -366,15 +365,14 @@ project.
 # Create a boxplot to visualize distribution of `tenure` and detect any outliers
 plt.figure(figsize=(16,6))
 plt.title('Detecting outliers for tenure (Boxplot)', fontsize=15)
-plt.xticks(fontsize=8)
-plt.yticks(fontsize=8)
+plt.xticks(fontsize=12)
+plt.yticks(fontsize=12)
 sns.boxplot(x=df1['tenure'])
 plt.show()
 
 ```
 
-The box plot shows that there are outliers in the `tenure` column.
-Checking how many rows contain outliers in the `tenure` column.
+The box plot shows that there are outliers in the `tenure` column. So, checking how many rows contain outliers in the `tenure` column. 
 
 ```{python eda IQR}
 
@@ -402,15 +400,7 @@ print(f'Number of rows containing outliers in tenure:', len(outliers))
 
 ```
 
--   What did you observe about the relationships between variables?
--   What do you observe about the distributions in the data?
--   What transformations did you make with your data? Why did you chose
-    to make those decisions?
--   What are some purposes of EDA before constructing a predictive
-    model?
--   What resources do you find yourself using as you complete this
-    stage? (Make sure to include the links.)
--   Do you have any ethical considerations in this stage?
+Outlier analysis in the tenure column indicates that employees with less than 1.5 years or more than 5.5 years of tenure show notable deviations, with 824 rows flagged as outliers. Most employees tend to leave within 5 years, possibly due to lack of advancement opportunities.
 
 ### Data Visualization
 
@@ -446,19 +436,30 @@ numeric_df = df1.select_dtypes(include=['number'])
 
 # Plot a correlation heatmap
 plt.figure(figsize=(20, 12))
-heatmap = sns.heatmap(numeric_df.corr(), vmin=-1, vmax=1, annot=True, cmap=sns.color_palette("vlag", as_cmap=True))
-heatmap.set_title('Correlation Heatmap', fontdict={'fontsize':14}, pad=12);
+heatmap = sns.heatmap(
+    numeric_df.corr(),
+    vmin=-1,
+    vmax=1,
+    annot=True,
+    fmt=".2f",  # optional: format annotation
+    annot_kws={"size": 12},  # ← font size of annotation inside heatmap
+    cmap=sns.color_palette("vlag", as_cmap=True),
+    cbar_kws={"shrink": 0.75, "label": "Correlation"}  # optional: color bar label
+)
+heatmap.set_title('Correlation Heatmap', fontdict={'fontsize':20}, pad=20);
+
+# Set x and y tick labels size
+heatmap.set_xticklabels(heatmap.get_xticklabels(), rotation=45, ha='right', fontsize=14)
+heatmap.set_yticklabels(heatmap.get_yticklabels(), fontsize=14)
+plt.tight_layout()
 plt.show()
 
 ```
 
-**Correlation heatmap**,
+**Correlation heatmap**
 
--   Number of projects, average monthly hours, and evaluation scores all
-    have the highest positive correlation with each other than the rest
-    (\>0.1)
--   Whether or not an employee leaves is negatively correlates with
-    their satisfaction level
+-   **Positive Correlations:** Number of projects, average monthly hours, and evaluation scores all have the highest positive correlation with each other than the rest (\>0.1)
+-   **Negative Correlation:** Whether or not an employee leaves is negatively correlates with their satisfaction level
 
 ```{python vis2}
 # PLots to analyse Tenure vs satisfaction; tenure vs left distribution
@@ -469,14 +470,14 @@ fig, ax = plt.subplots(1, 2, figsize = (20,8))
 tenure_stay = df1[df1['left']==0]['tenure']
 tenure_left = df1[df1['left']==1]['tenure']
 sns.histplot(data=df1, x='tenure', hue='left', multiple='dodge', shrink=5, ax=ax[0])
-ax[0].set_title('Tenure distribution classified by employee who left', fontsize=12)
+ax[0].set_title('Tenure distribution classified by employee who left', fontsize=14)
 
 
 # Tenure vs Satisfaction
 sns.boxplot(data=df1, x='satisfaction', y='tenure', hue='left', orient="h", saturation=0.75, ax=ax[1])
 ax[1].legend(loc='upper left', title='Left')
 ax[1].invert_yaxis()
-ax[1].set_title('Satisfaction vs Tenure', fontsize=12)
+ax[1].set_title('Satisfaction vs Tenure', fontsize=14)
 
 plt.show()
 ```
@@ -502,14 +503,14 @@ fig, ax = plt.subplots(1, 2, figsize = (20,8))
 projects_stay = df1[df1['left']==0]['#_projects']
 projects_left = df1[df1['left']==1]['#_projects']
 sns.histplot(data=df1, x='#_projects', hue='left', multiple='dodge', shrink=5, ax=ax[0])
-ax[0].set_title('No of projects distribution classified by employee who left', fontsize=12)
+ax[0].set_title('No of projects distribution classified by employee who left', fontsize=14)
 
 
 # #_project vs avg_mon_hrs
 sns.boxplot(data=df1, x='avg_mon_hrs', y='#_projects', hue='left', orient="h",saturation=0.75, ax=ax[1])
 ax[1].legend(loc='upper left', title='Left')
 ax[1].invert_yaxis()
-ax[1].set_title('Average monthly hours by No of project', fontsize=12)
+ax[1].set_title('Average monthly hours by No of project', fontsize=14)
 plt.show()
 ```
 
@@ -528,12 +529,8 @@ Based on the plots,
 **Box Plots**\
 Employees who left the company,
 
--   Those who worked longer hours and more projects
--   They quit because of being overworked.
--   Those who worked least hours and less projects
--   Either they are fired or might have given notice to leave the
-    company, so they were assigned fewer projects and worked lesser
-    hours
+-   Those who worked longer hours and more projects, because of being overworked.
+-   Those who worked least hours and less projects, either they are fired or might have given notice to leave the company, so they were assigned fewer projects and worked lesser hours
 
 ```{python vis4}
 
@@ -545,11 +542,11 @@ sns.boxplot(data=df1, x='satisfaction', y='salary', hue='left',
             orient="h", saturation=0.75, ax=ax[0])
 ax[0].invert_yaxis()
 ax[0].legend(loc='upper left', title='Left')
-ax[0].set_title('Satisfaction vs Salary', fontsize=12)
+ax[0].set_title('Satisfaction vs Salary', fontsize=14)
 
 # Plot for satisfaction vs avg_mon_hrs
 sns.scatterplot(data=df1, x='satisfaction', y='avg_mon_hrs', hue='left', alpha=0.4, ax=ax[1])
-ax[1].set_title('Satisfaction level by average monthly work hours', fontsize='14')
+ax[1].set_title('Satisfaction level by average monthly work hours', fontsize=14)
 
 ```
 
@@ -576,7 +573,7 @@ fig, ax = plt.subplots(1, 2, figsize = (20,8))
 
 # Plot for avg_mon_hrs vs promotion_<5yrs
 sns.scatterplot(data=df1, x='avg_mon_hrs', y='promotion_<5yrs', hue='left', ax=ax[0])
-ax[0].set_title('Average monthly hours by promotion in the last 5 years', fontsize=12)
+ax[0].set_title('Average monthly hours by promotion in the last 5 years', fontsize=14)
 
 # Plot for avg_mon_hrs vs last_eval
 sns.scatterplot(data=df1, x='avg_mon_hrs', y='last_eval', hue='left', alpha=0.4, ax=ax[1])
@@ -605,7 +602,7 @@ Based on the plot,
 plt.figure(figsize=(13,10))
 sns.histplot(data=df1, x='department', hue='left', discrete=1, 
              hue_order=[0, 1], multiple='dodge', shrink=.5)
-plt.title('Employees distribution classified by department', fontsize=12)
+plt.title('Employees distribution classified by department', fontsize=14)
 
 plt.show()
 
@@ -625,8 +622,8 @@ Key drivers of employees who left are because,
 
 Most of the employees are mostly burned out working long hours, more
 number of projects and not receiving any benefits such as promotion or
-higher salary. This mainly points out the poor company management and
-the company policies that might have to be investigated further.
+higher salary. Dissatisfaction is prevalent among overworked staff, especially when rewards such as promotion or salary increments are absent. This findings highlight potential issues in poor company management and
+the company HR policies that might have to be investigated further and strategic action to improve employee satisfaction and retention.
 
 ```         
 # paCe: Construct Stage
@@ -733,27 +730,34 @@ df_lr.shape
 ## Logistic Regression
 
 ```{python var selection}
+
 # Setting the 'y' variable
 y = df_lr['left']
 
 # Setting the 'x' variable with dropping the left column
 X = df_lr.drop('left', axis=1)
+
 ```
 
 ```{python data split}
+
 # Split the data into training (75%) and test (25%) dataset 
 X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.25, stratify=y, random_state=0)
+
 ```
 
 ```{python lr}
+
 # Constructing the LogReg model
 log_clf = LogisticRegression(random_state=0, max_iter=500)
 
 # Fitting the model
 log_clf.fit(X_train,y_train)
+
 ```
 
 ```{python lr pred}
+
 # Use the model for the test dataset
 y_pred = log_clf.predict(X_test)
 
@@ -770,6 +774,7 @@ log_disp.plot(values_format='')
 
 # Display plot
 plt.show()
+
 ```
 
 Model accurately predicts,
@@ -829,11 +834,13 @@ X = enc_df.drop('left',axis=1)
 
 # Split the data into training (75%) and test (25%) dataset 
 X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.25, stratify=y, random_state=0)
+
 ```
 
 ### Decision Tree Model 1
 
 ```{python dt1 train}
+
 # Instantia the decision tree model
 tree = DecisionTreeClassifier(random_state=0)
 
@@ -848,6 +855,7 @@ scoring = ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']
 
 # Instantiate GridSearch
 dtree1 = GridSearchCV(tree, cv_params, scoring=scoring, cv=4, refit='roc_auc')
+
 ```
 
 ```{python dt1 fit}
@@ -860,9 +868,11 @@ dtree1.best_params_
 
 # Check best AUC score on CV
 dtree1.best_score_
+
 ```
 
 ```{python result func}
+
 def make_results(model_name:str, model_object, metric:str):
     '''
     Arguments:
@@ -906,12 +916,15 @@ def make_results(model_name:str, model_object, metric:str):
                         })
   
     return table
+  
 ```
 
 ```{python dt1 results}
+
 # Get all CV scores
 dtree1_cv_results = make_results('Decision Tree 1 CV', dtree1, 'auc')
 dtree1_cv_results.style.set_table_attributes("class='table table-sm'")
+
 ```
 
 The metrics scores are very high. The model performance is very good,
@@ -921,6 +934,7 @@ performed to compare the models
 ### Random Forest 1
 
 ```{python rf1 train}
+
 # Instantiate model
 rf = RandomForestClassifier(random_state=0)
 
@@ -938,9 +952,11 @@ scoring = ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']
 
 # Instantiate GridSearch
 rf1 = GridSearchCV(rf, cv_params, scoring=scoring, cv=4, refit='roc_auc', n_jobs=-1)
+
 ```
 
 ```{python rf1 fit}
+
 # Fitting the model
 rf1.fit(X_train, y_train) 
 
@@ -975,6 +991,7 @@ Based on the model training results,
     test set can be evaluated using the Random Forest.
 
 ```{python testscores func}
+
 def get_scores(model_name:str, model, X_test_data, y_test_data):
     '''
     Generate a table of test scores.
@@ -1009,9 +1026,11 @@ def get_scores(model_name:str, model, X_test_data, y_test_data):
 ```
 
 ```{python rf1 ts}
+
 # Get predictions on test data
 rf1_test_scores = get_scores('Random Forest 1 Test', rf1, X_test, y_test)
 rf1_test_scores.style.set_table_attributes("class='table table-sm'")
+
 ```
 
 |     | model                | precision | recall   | f1       | accuracy | AUC      |
@@ -1038,14 +1057,17 @@ notice to leave. So, maybe engineering this variable to a new variable
 as overworked might help improve the models prediction
 
 ```{python fe1}
+
 # Drop `satisfaction_level` and save resulting dataframe in new variable
 df2 = enc_df.drop('satisfaction', axis=1)
 
 # Display first few rows of new dataframe
 df2.head().style.set_table_attributes("class='table table-sm'")
+
 ```
 
 ```{python fe2}
+
 # Create `overworked` column. For now, it's identical to average monthly hours.
 df2['overworked'] = df2['avg_mon_hrs']
 
@@ -1058,6 +1080,7 @@ df2['overworked'] = (df2['overworked'] > 175).astype(int)
 
 # Display first few rows of new column
 df2[['overworked']].head().style.set_table_attributes("class='table table-sm'")
+
 ```
 
 ```         
@@ -1082,14 +1105,17 @@ Name: overworked, dtype: int64
 ```
 
 ```{python fe3}
+
 # Drop the `average_monthly_hours` column
 df2 = df2.drop('avg_mon_hrs', axis=1)
 
 # Display first few rows of resulting dataframe
 df2.head().style.set_table_attributes("class='table table-sm'")
+
 ```
 
 ```{python m2 var selc}
+
 # Isolate the outcome variable
 y = df2['left']
 
@@ -1098,11 +1124,13 @@ X = df2.drop('left', axis=1)
 
 # Create test data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, stratify=y, random_state=0)
+
 ```
 
 ### Decision Tree 2
 
 ```{python dt2 train}
+
 # Instantiate model
 tree = DecisionTreeClassifier(random_state=0)
 
@@ -1117,6 +1145,7 @@ scoring = ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']
 
 # Instantiate GridSearch
 dtree2 = GridSearchCV(tree, cv_params, scoring=scoring, cv=4, refit='roc_auc')
+
 ```
 
 ```{python dt2 fit}
@@ -1128,6 +1157,7 @@ dtree2.best_params_
 
 # Check best AUC score on CV
 dtree2.best_score_
+
 ```
 
 ```         
@@ -1135,16 +1165,19 @@ dtree2.best_score_
 ```
 
 ```{python dt2 result}
+
 # Get all CV scores
 dtree2_cv_results = make_results('Decision Tree 2 CV', dtree2, 'auc')
 results = pd.concat([dtree1_cv_results,dtree2_cv_results,rf1_cv_results], axis=0)
 results.reset_index(drop=True, inplace=True)
 results.style.set_table_attributes("class='table table-sm'")
+
 ```
 
 ### Random Forest 2
 
 ```{python rf2 train}
+
 # Instantiate model
 rf = RandomForestClassifier(random_state=0)
 
@@ -1162,6 +1195,7 @@ scoring = ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']
 
 # Instantiate GridSearch
 rf2 = GridSearchCV(rf, cv_params, scoring=scoring, cv=4, refit='roc_auc', n_jobs=-1)
+
 ```
 
 ```{python rf2 fit}
@@ -1182,11 +1216,13 @@ rf2.best_score_
 ```
 
 ```{python rf2 result}
+
 # Get all CV scores
 rf2_cv_results = make_results('Random Forest 2 CV', rf2, 'auc')
 results = pd.concat([dtree1_cv_results,dtree2_cv_results,rf1_cv_results,rf2_cv_results], axis=0)
 results.reset_index(drop=True, inplace=True)
 results.style.set_table_attributes("class='table table-sm'")
+
 ```
 
 |     | model              | precision | recall   | F1       | accuracy | auc      |
@@ -1206,11 +1242,13 @@ Random Forest Model,
     now be used for prediction
 
 ```{python rf2 ts}
+
 # Get predictions on test data
 rf2_test_scores = get_scores('Random Forest 2 Test', rf2, X_test, y_test)
 test_results = pd.concat([rf1_test_scores, rf2_test_scores], axis=0)
 test_results.reset_index(drop=True, inplace=True)
 test_results.style.set_table_attributes("class='table table-sm'")
+
 ```
 
 |     | model                | precision | recall   | f1       | accuracy | AUC      |
@@ -1224,6 +1262,7 @@ Plotting a Confusion Matrix to visualize the model's predictions on the
 test set
 
 ```{python rf2 cm}
+
 # Generate array of values for confusion matrix
 preds = rf2.best_estimator_.predict(X_test)
 cm = confusion_matrix(y_test, preds, labels=rf2.classes_)
@@ -1232,6 +1271,7 @@ cm = confusion_matrix(y_test, preds, labels=rf2.classes_)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm,
                              display_labels=rf2.classes_)
 disp.plot(values_format='');
+
 ```
 
 A perfect model would yield all true negatives and true positives, and
@@ -1244,11 +1284,13 @@ that stay
 ### Plotting the Decision Tree
 
 ```{python dt2 plots1}
+
 # Plot the tree
 plt.figure(figsize=(85,20))
 plot_tree(dtree2.best_estimator_, max_depth=6, fontsize=14, feature_names=X.columns, 
           class_names={0:'stayed', 1:'left'}, filled=True);
 plt.show()
+
 ```
 
 #### Decision tree feature importance
@@ -1265,6 +1307,7 @@ dtree2_importances = dtree2_importances.sort_values(by='gini_importance', ascend
 # Only extract the features with importances > 0
 dtree2_importances = dtree2_importances[dtree2_importances['gini_importance'] != 0]
 dtree2_importances.style.set_table_attributes("class='table table-sm'")
+
 ```
 
 |                      | gini_importance |
@@ -1286,7 +1329,7 @@ dtree2_importances.style.set_table_attributes("class='table table-sm'")
 ```{python dt2 plots2}
 
 sns.barplot(data=dtree2_importances, x="gini_importance", y=dtree2_importances.index, orient='h')
-plt.title("Decision Tree: Feature Importances for Employee Leaving", fontsize=12)
+plt.title("Decision Tree: Feature Importances for Employee Leaving", fontsize=14)
 plt.ylabel("Feature")
 plt.xlabel("Importance")
 plt.show()
@@ -1303,6 +1346,7 @@ variable 'employee left'
 Now, plot the feature importances for the random forest model.
 
 ```{python rf feature plot}
+
 # Get feature importances
 feat_impt = rf2.best_estimator_.feature_importances_
 
@@ -1322,11 +1366,11 @@ ax1 = fig.add_subplot(111)
 
 y_sort_df.plot(kind='barh',ax=ax1,x="Feature",y="Importance")
 
-ax1.set_title("Random Forest: Important variables that have an impact in employees leaving", fontsize=12)
+ax1.set_title("Random Forest: Important variables that have an impact in employees leaving", fontsize=14)
 ax1.set_ylabel("Feature")
 ax1.set_xlabel("Importance")
-
 plt.show()
+
 ```
 
 Feature importance plot for the Random Forest is the same as the
