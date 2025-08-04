@@ -215,7 +215,7 @@ from sklearn.tree import plot_tree
 
 ## Data Loading and Pre-processing
 
-### Data Loading 
+### Data Loading
 
 To start the project, loading the dataset `HR_capstone_dataset.csv`, and
 analyse the basic of the dataset. The dataset represents 10 columns of
@@ -320,7 +320,7 @@ list(df.columns)
 
 **Check missing values**
 
-Checking for any missing values in the data. 
+Checking for any missing values in the data.
 
 ```{python eda null}
 
@@ -333,7 +333,7 @@ There appears to be no missing values in this dataset.
 
 **Check duplicates**
 
-Checking for any duplicate entries in the data. 
+Checking for any duplicate entries in the data.
 
 ```{python eda duplicates}
 
@@ -351,7 +351,10 @@ df1.head().style.set_table_attributes("class='table table-sm'")
 
 ```
 
-Based on the duplicate data set, there are several continuous variables across all the 10 columns which is very highly likely that these observations are duplicates. Therefore dropping them will help in making accurate predictions.
+Based on the duplicate data set, there are several continuous variables
+across all the 10 columns which is very highly likely that these
+observations are duplicates. Therefore dropping them will help in making
+accurate predictions.
 
 **Check outliers**
 
@@ -372,7 +375,8 @@ plt.show()
 
 ```
 
-The box plot shows that there are outliers in the `tenure` column. So, checking how many rows contain outliers in the `tenure` column. 
+The box plot shows that there are outliers in the `tenure` column. So,
+checking how many rows contain outliers in the `tenure` column.
 
 ```{python eda IQR}
 
@@ -400,7 +404,10 @@ print(f'Number of rows containing outliers in tenure:', len(outliers))
 
 ```
 
-Outlier analysis in the tenure column indicates that employees with less than 1.5 years or more than 5.5 years of tenure show notable deviations, with 824 rows flagged as outliers. Most employees tend to leave within 5 years, possibly due to lack of advancement opportunities.
+Outlier analysis in the tenure column indicates that employees with less
+than 1.5 years or more than 5.5 years of tenure show notable deviations,
+with 824 rows flagged as outliers. Most employees tend to leave within 5
+years, possibly due to lack of advancement opportunities.
 
 ### Data Visualization
 
@@ -458,8 +465,11 @@ plt.show()
 
 **Correlation heatmap**
 
--   **Positive Correlations:** Number of projects, average monthly hours, and evaluation scores all have the highest positive correlation with each other than the rest (\>0.1)
--   **Negative Correlation:** Whether or not an employee leaves is negatively correlates with their satisfaction level
+-   **Positive Correlations:** Number of projects, average monthly
+    hours, and evaluation scores all have the highest positive
+    correlation with each other than the rest (\>0.1)
+-   **Negative Correlation:** Whether or not an employee leaves is
+    negatively correlates with their satisfaction level
 
 ```{python vis2}
 # PLots to analyse Tenure vs satisfaction; tenure vs left distribution
@@ -529,8 +539,11 @@ Based on the plots,
 **Box Plots**\
 Employees who left the company,
 
--   Those who worked longer hours and more projects, because of being overworked.
--   Those who worked least hours and less projects, either they are fired or might have given notice to leave the company, so they were assigned fewer projects and worked lesser hours
+-   Those who worked longer hours and more projects, because of being
+    overworked.
+-   Those who worked least hours and less projects, either they are
+    fired or might have given notice to leave the company, so they were
+    assigned fewer projects and worked lesser hours
 
 ```{python vis4}
 
@@ -622,8 +635,12 @@ Key drivers of employees who left are because,
 
 Most of the employees are mostly burned out working long hours, more
 number of projects and not receiving any benefits such as promotion or
-higher salary. Dissatisfaction is prevalent among overworked staff, especially when rewards such as promotion or salary increments are absent. This findings highlight potential issues in poor company management and
-the company HR policies that might have to be investigated further and strategic action to improve employee satisfaction and retention.
+higher salary. Dissatisfaction is prevalent among overworked staff,
+especially when rewards such as promotion or salary increments are
+absent. This findings highlight potential issues in poor company
+management and the company HR policies that might have to be
+investigated further and strategic action to improve employee
+satisfaction and retention.
 
 ```         
 # paCe: Construct Stage
@@ -698,6 +715,23 @@ Binomial logistic regression suits this objective.
     ordinal values (0 - low, 1 - medium , 2 - high)
 ```
 
+# Building the Models
+
+To assess the likelihood of the employee retention, logistic regression
+and tree based models - decision tree and random forest models were
+employed. The categorical variables are first encoded - `salary` was
+mapped ordinally from low to high, and `department` was mapped using
+dummy variables to retial information of all the categories. Outliers in
+the `tenure` was also removed to ensure better model stability and
+performance.
+
+Logistic regression was selected for interpretability and ability to
+model linear relationships, while decision tree models were implemented
+to capture potential non-linear patters and interaction between
+variables. These two models offer complementary perspectives on the
+dataset, allowing for a more robust evaluation of predictive power and
+feature importance.
+
 ```{python data enc}
 # Encoding the categorical into numerical 
 # Copy the dataframe for the modelling
@@ -709,9 +743,8 @@ salary_map = {'low':0, 'medium':1, 'high':2}
 # Creating a new column for the salary map
 enc_df['salary'] = enc_df['salary'].map(salary_map)
 
-# Encoding the department with dummy variables
+# Encoding the `department` with dummy variables
 enc_df = pd.get_dummies(enc_df, drop_first=False)
-
 enc_df.head()
 
 # Removing the outliers in the tenure and saving it in a new dataframe
@@ -721,14 +754,17 @@ df_lr.head().reset_index(drop=True).style.set_table_attributes("class='table tab
 df_lr.shape
 ```
 
-```         
-(11167, 19)
-```
-
-# Building the Models
-
 ## Logistic Regression
 
+Logistice regression is a supervised machine learning algorithm used for
+classification problems, especially when the target variable is binary.
+Unlike linear regression, which is used to predict continuous outcomes,
+logistic regression estimates the probability that a given input belongs
+to a particular category. It uses the logistic (sigmoid) function to map
+predicted values to a range between 0 and 1, making it ideal for
+prodicting boolean outcomes.
+
+Starting the logistic regression by setting the target and predictor variables. Then training the model with the training dataset and then using the test dataset to test the model.
 ```{python var selection}
 
 # Setting the 'y' variable
@@ -739,14 +775,10 @@ X = df_lr.drop('left', axis=1)
 
 ```
 
-```{python data split}
+```{python data split lr fit}
 
 # Split the data into training (75%) and test (25%) dataset 
 X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.25, stratify=y, random_state=0)
-
-```
-
-```{python lr}
 
 # Constructing the LogReg model
 log_clf = LogisticRegression(random_state=0, max_iter=500)
@@ -794,9 +826,10 @@ df_lr['left'].value_counts(normalize=True)
 
 ```
 
-The data shows 83% - 17% split and shows imbalance. Based on the model
-performance, we can check whether the data should be resampled with a
-bit of balance split
+The data shows 83% - 17% split and shows imbalance. The class
+distribution is imbalanced, with only 17% of the data representing
+employees who left. This imbalance may contribute to the model’s bias
+toward predicting that employees will stay.
 
 ```{python lr cr}
 
@@ -814,14 +847,26 @@ report_df.style.set_table_attributes("class='table table-sm'")
 
 ```
 
-Classification report shows,\
-- Precision = 79% - Recall = 83% - F1 score = 80% - Accuracy = 83%
+**Classification report shows,**
+
+-   Precision = 79%
+-   Recall = 83%
+-   F1 score = 80%
+-   Accuracy = 83%
 
 The model shows very low scores in the objective which is the importance
-to predict employees who will leave. Hence, we can try other
-classification model - Decision Tree and Random Forest
+to predict employees who will leave. Based on the insights and
+limitations, it is worth exploring alternative classification models
+such as Decision Tree and Random Forest, which may handle non-linear
+relationships and imbalanced data more effectively, and potentially
+improve prediction of employee attrition.
 
 ## Tree-based Model - Decision Tree & Random Forest
+Tree-based models, such as Decision Trees and Random Forests, are powerful and intuitive methods used for both classification and regression tasks.
+
+**A Decision Tree** splits the data into subsets based on the value of input features, creating a tree-like structure where each internal node represents a decision rule. It is easy to interpret but can be prone to overfitting.
+
+To overcome this, **Random Forest**, an ensemble technique, builds multiple Decision Trees on different random subsets of the data and aggregates their predictions to improve accuracy and generalization. Random Forests reduce variance and handle high-dimensional data well, making them robust for complex modeling tasks.
 
 ```{python tbmodel var sel}
 
@@ -837,8 +882,7 @@ X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.25, stratif
 
 ```
 
-### Decision Tree Model 1
-
+### Decision Tree Model
 ```{python dt1 train}
 
 # Instantia the decision tree model
@@ -864,10 +908,10 @@ dtree1 = GridSearchCV(tree, cv_params, scoring=scoring, cv=4, refit='roc_auc')
 dtree1.fit(X_train,y_train)
 
 # Check best parameters
-dtree1.best_params_
+print(dtree1.best_params_)
 
 # Check best AUC score on CV
-dtree1.best_score_
+print(dtree1.best_score_)
 
 ```
 
@@ -927,12 +971,15 @@ dtree1_cv_results.style.set_table_attributes("class='table table-sm'")
 
 ```
 
-The metrics scores are very high. The model performance is very good,
-but decision tree model is prone to overfitting. Random Forest Model is
-performed to compare the models
+The Decision Tree model demonstrated strong performance, achieving high scores across key metrics such as,
+-   Precision = 91.4% 
+-   Recall = 91.6%
+-   F1-score = 91.5% 
+-   Accuracy = 97.2% 
+-   AUC of 0.97
+These results indicate that the model fits the data well. However, the decision tree model is prone to overfitting. To address this concern and ensure better generalization, Random Forest Model was performed to compare the models.
 
-### Random Forest 1
-
+### Random Forest
 ```{python rf1 train}
 
 # Instantiate model
@@ -973,16 +1020,16 @@ rf1.best_score_
 # Get all CV scores
 rf1_cv_results = make_results('Random Forest 1 CV', rf1, 'auc')
 results = pd.concat([rf1_cv_results,dtree1_cv_results], axis=0)
-results.reset_index(drop=True, inplace=True)
-results.style.set_table_attributes("class='table table-sm'")
+results.reset_index(drop=True, inplace=True).style.set_table_attributes("class='table table-sm'")
 
 ```
 
-|     | model              | precision | recall   | F1       | accuracy | auc      |
-|-----|--------------------|-----------|----------|----------|----------|----------|
-| 0   | Random Forest 1 CV | 0.950023  | 0.915614 | 0.932467 | 0.977983 | 0.980425 |
-| 0   | Decision Tree 1 CV | 0.914490  | 0.916279 | 0.915345 | 0.971867 | 0.969867 |
-
+The `Random Forest` model also demonstrated strong performance, achieving high scores across key metrics such as,
+-   Precision = 91.4% 
+-   Recall = 91.6%
+-   F1-score = 91.5% 
+-   Accuracy = 97.2% 
+-   AUC of 0.97
 Based on the model training results,
 
 -   Random Forest Model scores better than the Decision Tree, exception
@@ -1032,10 +1079,6 @@ rf1_test_scores = get_scores('Random Forest 1 Test', rf1, X_test, y_test)
 rf1_test_scores.style.set_table_attributes("class='table table-sm'")
 
 ```
-
-|     | model                | precision | recall   | f1       | accuracy | AUC      |
-|-----|----------------------|-----------|----------|----------|----------|----------|
-| 0   | Random Forest 1 Test | 0.964211  | 0.919679 | 0.941418 | 0.980987 | 0.956439 |
 
 Test results are similar to the training results, which shows that the
 model is very good. The model's performance will be similar when new
