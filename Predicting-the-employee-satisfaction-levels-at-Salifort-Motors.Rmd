@@ -135,12 +135,10 @@ challenge, either selecting a regression model or a tree-based machine
 learning model to predict whether an employee will leave the company.
 The following methodology was undertaken for this project,
 
--   Raw data - HR_capstone_dataset.csv from the HR department is used to
-    assess the needs of the Senior leadership team.
-
+-   Raw data - `HR_capstone_dataset.csv` from the HR department is used
+    to assess the needs of the Senior leadership team.
 -   The merged data set is split into 70% training and 30% test data
     which is used to train and predict using machine learning models.
-
 -   Analysis such as confusion matrix, feature importance and scoring
     metrics is performed to analyse the models performance in predicting
     the employee satisfaction levels and the main factors influencing
@@ -153,9 +151,11 @@ downloaded from the Kaggle website
 [here](https://www.kaggle.com/datasets/mfaisalqureshi/hr-analytics-and-job-prediction?select=HR_comma_sep.csv).
 In the EDA, the dataset is analysed and prepared for building the
 machine learning models. Analysis such as, - Loading the required
-packages and the data set  - Checking the descriptive statistics\
-- Check for missing, duplicate values and outliers\
-- Visualizing the relationship within or between the data variables\
+packages and the data set 
+
+-   Checking the descriptive statistics
+-   Check for missing, duplicate values and outliers
+-   Visualizing the relationship within or between the data variables\
 
 ## Load required libraries
 
@@ -278,7 +278,7 @@ Descriptive analysis of the dataset is shown here. Based on this,
 -   Most employees have not had accidents or been promoted in the last 5
     years.
 
-### Data Cleaning 
+### Data Cleaning
 
 In this step, the `HR_capstone_dataset.csv` dataset is then cleaned by
 addressing missing values, removing redundant or duplicate entries, and
@@ -659,7 +659,7 @@ the company policies that might have to be investigated further.
 -   Do you have any ethical considerations in this stage?
 
 [Double-click to enter your responses here.]
-```
+
 
 # Model Building, Training and Predictions
 
@@ -698,6 +698,7 @@ Binomial logistic regression suits this objective.
     values
 -   Salary is hierarchial set of category, which should be encoded with
     ordinal values (0 - low, 1 - medium , 2 - high)
+```
 
 ```{python data enc}
 # Encoding the categorical into numerical 
@@ -726,7 +727,9 @@ df_lr.shape
 (11167, 19)
 ```
 
-### Building the Model
+# Building the Models
+
+## Linear Regression
 
 ```{python var selection}
 # Setting the 'y' variable
@@ -917,19 +920,19 @@ performed to compare the models
 rf = RandomForestClassifier(random_state=0)
 
 # Assign a dictionary of hyperparameters to search over
-cv_params = {'max_depth': [3,5, None], 
+cv_params = {'max_depth': [3, None], 
              'max_features': [1.0],
              'max_samples': [0.7, 1.0],
              'min_samples_leaf': [1,2,3],
-             'min_samples_split': [2,3,4],
-             'n_estimators': [300, 500],
-             }  
+             'min_samples_split': [2,3],
+             'n_estimators': [100]
+             }    
 
 # Assign a dictionary of scoring metrics to capture
 scoring = ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']
 
 # Instantiate GridSearch
-rf1 = GridSearchCV(rf, cv_params, scoring=scoring, cv=4, refit='roc_auc')
+rf1 = GridSearchCV(rf, cv_params, scoring=scoring, cv=4, refit='roc_auc', n_jobs=-1)
 ```
 
 ```{python rf1 fit}
@@ -1015,7 +1018,9 @@ Round 1 Models included all the variables as features for the model
 prediction. For the Round 2 Models, Feature engineering will be used to
 customize the data for improving the model.
 
-### Feature Engineering
+# Building the Model
+
+## After Feature Engineering
 
 What can be engineered in the dataset, - Satisfaction level cannot be
 reported for all the employees. So, dropping it would be an option -
@@ -1135,19 +1140,19 @@ results
 rf = RandomForestClassifier(random_state=0)
 
 # Assign a dictionary of hyperparameters to search over
-cv_params = {'max_depth': [3,5, None], 
+cv_params = {'max_depth': [3, None], 
              'max_features': [1.0],
              'max_samples': [0.7, 1.0],
              'min_samples_leaf': [1,2,3],
-             'min_samples_split': [2,3,4],
-             'n_estimators': [300, 500],
+             'min_samples_split': [2,3],
+             'n_estimators': [100]
              }  
 
 # Assign a dictionary of scoring metrics to capture
 scoring = ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']
 
 # Instantiate GridSearch
-rf2 = GridSearchCV(rf, cv_params, scoring=scoring, cv=4, refit='roc_auc')
+rf2 = GridSearchCV(rf, cv_params, scoring=scoring, cv=4, refit='roc_auc', n_jobs=-1)
 ```
 
 ```{python rf2 fit}
@@ -1317,6 +1322,7 @@ plt.show()
 Feature importance plot for the Random Forest is the same as the
 Decision Tree model - feature importance plot
 
+```         
 # pacE: Execute Stage
 
 -   Interpret model performance and results
@@ -1353,15 +1359,16 @@ Decision Tree model - feature importance plot
 -   Do you have any ethical considerations in this stage?
 
 Double-click to enter your responses here.
+```
 
-## Step 4. Results and Evaluation
+# Results and Evaluation
 
 -   Interpret model
 -   Evaluate model performance using metrics
 -   Prepare results, visualizations, and actionable steps to share with
     stakeholders
 
-### Summary of model results
+## Summary of model results
 
 **Logistic Regression Model**
 
@@ -1392,7 +1399,7 @@ Random Forest model performs with,
 -   F1-Score = 88%;
 -   Accuracy = 96%; AUC = 93%
 
-### Conclusion, Recommendations, Next Steps
+## Conclusion, Recommendations, Next Steps
 
 From the initial assessment, EDA and Visualization, the employees are
 overworked due to the poor company management. This is also confirmed
