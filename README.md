@@ -2,10 +2,10 @@
 
 **A Machine Learning Approach to HR Analytics in R**
 
-This project uses machine learning techniques to predict employee satisfaction levels at Salisfort Motors. Leveraging employee-related features such as performance scores, compensation, and departmental data, various classification models are built and evaluated to support data-driven decision-making in HR. The models were developed and tested using R.
+This project uses machine learning techniques to predict employee satisfaction levels at Salisfort Motors. Leveraging employee-related features such as performance scores, compensation, and departmental data, various classification models are built and evaluated to support data-driven decision-making in HR. The models were developed and tested using Python programming language.
 
 ---
-Project Structure
+**Project Structure**
 - `data/` – Raw and processed datasets containing employee records
 - `report.Rmd` – RMarkdown file containing the full analysis and modeling process
 - `report.html` – Rendered HTML report with visualizations and interpretation
@@ -59,8 +59,7 @@ represents 10 columns of self-reported information from employees of a
 fictitious multinational vehicle manufacturing corporation.
 
 **Methodology**\
-The following methodology was undertaken for this project,
-
+The following methodology was undertaken for this project,    
 -   Raw data - `HR_capstone_dataset.csv` from the HR department is used
     to assess the needs of the Senior leadership team.
 -   The merged data set is split into 70% training and 30% test data
