@@ -21,14 +21,17 @@ editor_options:
 # Table of Contents {.unnumbered}
 
 [Statements](#statements)\
-[Executive Summary](#executive-summary)\
-1. [Introduction](#introduction)\
-2. [Aim and Methodology of this
-Project](#aim-and-methodology-of-this-project)\
-3. [Exploratory Data Analysis - EDA](#exploratory-data-analysis-EDA)\
-4. [Machine Learning Model](#machine-learning-model)\
-5. [Results & Discussion](#results-&-discussions)\
-6. [Conclusion](#conclusion)
+[Executive Summary](#executive-summary)
+
+1.  [Introduction](#introduction)
+2.  [Aim and Methodology of this
+    Project](#aim-and-methodology-of-this-project)
+3.  [Exploratory Data Analysis - EDA](#exploratory-data-analysis-EDA)
+4.  [Machine Learning Model](#machine-learning-model)
+5.  [Machine Learning Model - After Feature
+    Engineering](#machine-learning-model-after-feature-engineering)
+6.  [Results & Discussion](#results-&-discussions)
+7.  [Conclusion](#conclusion)
 
 # Statements {#statements .unnumbered}
 
@@ -210,6 +213,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score,\
 f1_score, confusion_matrix, ConfusionMatrixDisplay, classification_report
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.tree import plot_tree
+from sklearn.tree import export_text
 
 ```
 
@@ -642,80 +646,7 @@ management and the company HR policies that might have to be
 investigated further and strategic action to improve employee
 satisfaction and retention.
 
-```         
-# paCe: Construct Stage
-
--   Determine which models are most appropriate
--   Construct the model
--   Confirm model assumptions
--   Evaluate model results to determine how well your model fits the
-    data
-
-🔎 \## Recall model assumptions
-
-**Logistic Regression model assumptions** 
-  - Outcome variable is categorical   
-  - Observations are independent of each other   
-  - No severe multicollinearity among X variables    
-  - No extreme outliers   
-  - Linear relationship between each X variable and the logit of the outcome variable    
-  - Sufficiently large sample size
-
-### Reflect on these questions as you complete the constructing stage.
-
--   Do you notice anything odd?
--   Which independent variables did you choose for the model and why?
--   Are each of the assumptions met?
--   How well does your model fit the data?
--   Can you improve it? Is there anything you would change about the
-    model?
--   What resources do you find yourself using as you complete this
-    stage? (Make sure to include the links.)
--   Do you have any ethical considerations in this stage?
-
-[Double-click to enter your responses here.]
-
-
-# Model Building, Training and Predictions
-
-# Results and Evaluation
-
--   Fit a model that predicts the outcome variable using two or more
-    independent variables
--   Check model assumptions
--   Evaluate the model
-
-### Identify the type of prediction task.
-
-**Objective -** to analyse whether or not the employee leaves the
-company
-
-### Identify the types of models most appropriate for this task.
-
-This dependent variable has categorical values (0 & 1) which involves
-binary classification.
-
-Model to use, - Logistic regression - Tree-based ML model
-
-### Modelling
-
-Add as many cells as you need to conduct the modeling process.
-
-### Logistic Regression
-
-Binomial logistic regression suits this objective.
-
-**Steps to take for the model**
-
--   Categorical variables must be encoded as the numeric values, i.e.
-    department and salary
--   Department is a set of category which can be encoded with dummy
-    values
--   Salary is hierarchial set of category, which should be encoded with
-    ordinal values (0 - low, 1 - medium , 2 - high)
-```
-
-# Building the Models
+# Machine Learning Models
 
 To assess the likelihood of the employee retention, logistic regression
 and tree based models - decision tree and random forest models were
@@ -763,9 +694,12 @@ Unlike linear regression, which is used to predict continuous outcomes,
 logistic regression estimates the probability that a given input belongs
 to a particular category. It uses the logistic (sigmoid) function to map
 predicted values to a range between 0 and 1, making it ideal for
-prodicting boolean outcomes.
+predicting boolean outcomes.
 
-Starting the logistic regression by setting the target and predictor variables. Then training the model with the training dataset and then using the test dataset to test the model.
+Starting the logistic regression by setting the target and predictor
+variables. Then training the model with the training dataset and then
+using the test dataset to test the model.
+
 ```{python var selection}
 
 # Setting the 'y' variable
@@ -826,10 +760,10 @@ Model accurately predicts,
 df_lr['left'].value_counts(normalize=True)
 
 ```
+
 The data shows 83% - 17% split and shows imbalance. The class
 distribution is imbalanced, with only 17% of the data representing
-employees who left. This imbalance may contribute to the model’s bias
-toward predicting that employees will stay.
+employees who left.
 
 ```{python lr cr}
 
@@ -837,13 +771,31 @@ toward predicting that employees will stay.
 row_names = ['Predicted would not leave', 'Predicted would leave']
 
 # Generate report as dict
-report_dict = classification_report(y_test, y_pred, target_names=row_names, output_dict=True)
+report_logr = classification_report(y_test, y_pred, target_names = row_names, output_dict=True)
+
+precision = report_logr[avg_type]['precision']
+recall = report_logr[avg_type]['recall']
+f1 = report_logr[avg_type]['f1-score']
+accuracy = accuracy_score(y_test, y_pred)
+
+# Needed for AUC
+y_proba = log_clf.predict_proba(X_test)[:, 1] 
+auc = roc_auc_score(y_test, y_proba)
+
+
+# Create the row
+summary_row = {
+    'model': 'Logistic Regression',
+    'precision': round(precision, 6),
+    'recall': round(recall, 6),
+    'F1': round(f1, 6),
+    'accuracy': round(accuracy, 6),
+    'auc': round(auc, 6)
+}
 
 # Convert to DataFrame
-report_df = pd.DataFrame(report_dict).transpose()
-
-# Style as a Bootstrap table (if rendering to HTML)
-report_df.style.set_table_attributes("class='table table-sm'")
+report_logr = pd.DataFrame([summary_row])
+report_logr.style.set_table_attributes("class='table table-sm'")
 
 ```
 
@@ -855,18 +807,28 @@ report_df.style.set_table_attributes("class='table table-sm'")
 -   Accuracy = 83%
 
 The model shows very low scores in the objective which is the importance
-to predict employees who will leave. Based on the insights and
-limitations, it is worth exploring alternative classification models
-such as Decision Tree and Random Forest, which may handle non-linear
-relationships and imbalanced data more effectively, and potentially
-improve prediction of employee attrition.
+to predict employees who will leave. 
 
 ## Tree-based Model - Decision Tree & Random Forest
-Tree-based models, such as Decision Trees and Random Forests, are powerful and intuitive methods used for both classification and regression tasks.
 
-**A Decision Tree** splits the data into subsets based on the value of input features, creating a tree-like structure where each internal node represents a decision rule. It is easy to interpret but can be prone to overfitting.
+Tree-based models, such as Decision Trees and Random Forests, are
+powerful and intuitive methods used for both classification and
+regression tasks.
 
-To overcome this, **Random Forest**, an ensemble technique, builds multiple Decision Trees on different random subsets of the data and aggregates their predictions to improve accuracy and generalization. Random Forests reduce variance and handle high-dimensional data well, making them robust for complex modeling tasks.
+**A Decision Tree** splits the data into subsets based on the value of
+input features, creating a tree-like structure where each internal node
+represents a decision rule. It is easy to interpret but can be prone to
+overfitting.
+
+To overcome this, **Random Forest**, an ensemble technique, builds
+multiple Decision Trees on different random subsets of the data and
+aggregates their predictions to improve accuracy and generalization.
+Random Forests reduce variance and handle high-dimensional data well,
+making them robust for complex modeling tasks.
+
+Starting the tree based models by setting the target and predictor
+variables. Then training the model with the training dataset and then
+using the test dataset to test the model.
 
 ```{python tbmodel var sel}
 
@@ -883,6 +845,7 @@ X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.25, stratif
 ```
 
 ### Decision Tree Model
+
 ```{python dt1 train}
 
 # Instantia the decision tree model
@@ -951,12 +914,12 @@ def make_results(model_name:str, model_object, metric:str):
   
     # Create table of results
     table = pd.DataFrame()
-    table = pd.DataFrame({'model': [model_name],
-                          'precision': [precision],
-                          'recall': [recall],
+    table = pd.DataFrame({'Model': [model_name],
+                          'Precision': [precision],
+                          'Recall': [recall],
                           'F1': [f1],
-                          'accuracy': [accuracy],
-                          'auc': [auc]
+                          'Accuracy': [accuracy],
+                          'AUC': [auc]
                         })
   
     return table
@@ -967,32 +930,40 @@ def make_results(model_name:str, model_object, metric:str):
 
 # Get all CV scores
 dtree1_cv_results = make_results('Decision Tree 1 CV', dtree1, 'auc')
+dtree1_cv_results.reset_index(drop=True, inplace=True)
 dtree1_cv_results.style.set_table_attributes("class='table table-sm'")
 
 ```
 
-The Decision Tree model demonstrated strong performance, achieving high scores across key metrics such as,
--   Precision = 91.4% 
+The Decision Tree model demonstrated strong performance, achieving high
+scores across key metrics such as,
+
+-   Precision = 91.4%
 -   Recall = 91.6%
--   F1-score = 91.5% 
--   Accuracy = 97.2% 
--   AUC of 0.97
-These results indicate that the model fits the data well. However, the decision tree model is prone to overfitting. To address this concern and ensure better generalization, Random Forest Model was performed to compare the models.
+-   F1-score = 91.5%
+-   Accuracy = 97.2%
+-   AUC = 0.97
+
+These results indicate that the model fits the data well. However, the
+decision tree model is prone to overfitting. To address this concern and
+ensure better generalization, `Random Forest` Model was performed to
+compare the models.
 
 ### Random Forest
+
 ```{python rf1 train}
 
 # Instantiate model
 rf = RandomForestClassifier(random_state=0)
 
 # Assign a dictionary of hyperparameters to search over
-cv_params = {'max_depth': [3, None], 
+cv_params = {'max_depth': [3,5, None], 
              'max_features': [1.0],
              'max_samples': [0.7, 1.0],
              'min_samples_leaf': [1,2,3],
-             'min_samples_split': [2,3],
-             'n_estimators': [100]
-             }    
+             'min_samples_split': [2,3,4],
+             'n_estimators': [300, 500],
+             }      
 
 # Assign a dictionary of scoring metrics to capture
 scoring = ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']
@@ -1020,21 +991,31 @@ rf1.best_score_
 # Get all CV scores
 rf1_cv_results = make_results('Random Forest 1 CV', rf1, 'auc')
 results = pd.concat([rf1_cv_results,dtree1_cv_results], axis=0)
-results.reset_index(drop=True, inplace=True).style.set_table_attributes("class='table table-sm'")
+results.reset_index(drop=True, inplace=True)
+results.style.set_table_attributes("class='table table-sm'")
 
 ```
 
-The `Random Forest` model also demonstrated strong performance, achieving high scores across key metrics such as,
--   Precision = 91.4% 
+The `Random Forest` model also demonstrated strong performance on the
+training set, achieving high scores across key metrics such as,
+
+-   Precision = 95.0%
 -   Recall = 91.6%
--   F1-score = 91.5% 
--   Accuracy = 97.2% 
--   AUC of 0.97
+-   F1-score = 93.2%
+-   Accuracy = 97.8%
+-   AUC = 0.98
+
+These metrics indicate the model's strong ability to correctly classify
+both classes while maintaining high generalization performance.
+
 Based on the model training results,
 
--   Random Forest Model scores better than the Decision Tree, exception
-    is the recall but not too significant just 0.001 lower.
--   Random Forest Model performs well than the Decision Tree and the
+-   `Random Forest` Model scores better than the Decision Tree, achieved
+    higher precision, F1-score, accuracy, and AUC.
+-   `Random Forest` Random Forest helps reduce overfitting, a known
+    issue with standalone Decision Trees and improving predictive
+    reliability.
+-   `Random Forest` Model performs well than the Decision Tree and the
     test set can be evaluated using the Random Forest.
 
 ```{python testscores func}
@@ -1060,11 +1041,11 @@ def get_scores(model_name:str, model, X_test_data, y_test_data):
     recall = recall_score(y_test_data, preds)
     f1 = f1_score(y_test_data, preds)
 
-    table = pd.DataFrame({'model': [model_name],
-                          'precision': [precision], 
-                          'recall': [recall],
-                          'f1': [f1],
-                          'accuracy': [accuracy],
+    table = pd.DataFrame({'Model': [model_name],
+                          'Precision': [precision], 
+                          'Recall': [recall],
+                          'F1': [f1],
+                          'Accuracy': [accuracy],
                           'AUC': [auc]
                          })
   
@@ -1080,24 +1061,39 @@ rf1_test_scores.style.set_table_attributes("class='table table-sm'")
 
 ```
 
-Test results are similar to the training results, which shows that the
-model is very good. The model's performance will be similar when new
-unseen data is fitted, as the test data was used only for this model.
+The `Random Forest` model also demonstrated strong performance on the
+test set, achieving high scores across key metrics such as,
+
+-   Precision = 96.4%
+-   Recall = 92%
+-   F1-score = 94%
+-   Accuracy = 98.1%
+-   AUC = 0.97
+
+Test results are similar and slightly higher to the training results,
+which shows that the model is very good. Scores on precision, recall and
+F1-score effectively balances both false positive and false negatives
+and accuracy and AUC indicating excellent discriminatory power between
+the class. The model's performance will be similar when new unseen data
+is fitted, as the test data was used only for this model.
 
 Round 1 Models included all the variables as features for the model
 prediction. For the Round 2 Models, Feature engineering will be used to
 customize the data for improving the model.
 
-# Building the Model
+# Machine Learning Model - After Feature Engineering
 
-## After Feature Engineering
+Relevant variables were selected and transformed to improve model
+performance, including encoding categorical features, handling missing
+values, and creating meaningful derived features to enhance predictive
+accuracy. What can be engineered in this dataset,
 
-What can be engineered in the dataset, - Satisfaction level cannot be
-reported for all the employees. So, dropping it would be an option -
-Average monthly hours might have data leakage, as it might be recorded
-after the employees gives notice to resign or company has given the
-notice to leave. So, maybe engineering this variable to a new variable
-as overworked might help improve the models prediction
+-   Satisfaction level cannot be reported for all the employees. So,
+    dropping it would be an option
+-   Average monthly hours might have data leakage, as it might be
+    recorded after the employees gives notice to resign or company has
+    given the notice to leave. So, maybe engineering this variable to a
+    new variable as overworked might help improve the models prediction
 
 ```{python fe1}
 
@@ -1126,26 +1122,18 @@ df2[['overworked']].head().style.set_table_attributes("class='table table-sm'")
 
 ```
 
-```         
-Max hours: 310
-Min hours: 96
-```
-
 Assuming the 40 hrs job/per week with two weeks vacation policy, Average
 working hours per month = 40 hours \* 50 weeks / 12 months = 166.67
-hours
+hours. **Overworked can be defined as working hours more than 175 hours
+per month on average.** Therefore, employees working more than 175
+hours/month were classified as overworked (1), while others were labeled
+as not overworked (0).
 
-**Overworked can be defined as working hours more than 175 hours per
-month on average.**
-
-```         
-0    0
-1    1
-2    1
-3    1
-4    0
-Name: overworked, dtype: int64
-```
+To enrich the dataset with meaningful predictors, a new binary feature
+overworked was engineered based on average monthly working hours. This
+engineered feature adds interpretability to the model and allows it to
+capture the potential impact of excessive working hours on employee
+behavior or outcomes.
 
 ```{python fe3}
 
@@ -1203,18 +1191,25 @@ dtree2.best_score_
 
 ```
 
-```         
-0.9586752505340426
-```
-
 ```{python dt2 result}
 
 # Get all CV scores
 dtree2_cv_results = make_results('Decision Tree 2 CV', dtree2, 'auc')
 results = pd.concat([dtree1_cv_results,dtree2_cv_results,rf1_cv_results], axis=0)
-results.reset_index(drop=True, inplace=True).style.set_table_attributes("class='table table-sm'")
+results.reset_index(drop=True, inplace=True)
+results.style.set_table_attributes("class='table table-sm'")
 
 ```
+
+The `Decision tree 2` model balanced performance across all metrics, but
+slightly underperforms compared to both `Decision Tree 1 CV` and
+`Random Forest 1 CV`. such as,
+
+-   Precision = 85.7%
+-   Recall = 90.4%
+-   F1-score = 87.9%
+-   Accuracy = 95.9%
+-   AUC = 0.96
 
 ### Random Forest 2
 
@@ -1224,13 +1219,13 @@ results.reset_index(drop=True, inplace=True).style.set_table_attributes("class='
 rf = RandomForestClassifier(random_state=0)
 
 # Assign a dictionary of hyperparameters to search over
-cv_params = {'max_depth': [3, None], 
+cv_params = {'max_depth': [3,5, None], 
              'max_features': [1.0],
              'max_samples': [0.7, 1.0],
              'min_samples_leaf': [1,2,3],
-             'min_samples_split': [2,3],
-             'n_estimators': [100]
-             }  
+             'min_samples_split': [2,3,4],
+             'n_estimators': [300, 500],
+             }   
 
 # Assign a dictionary of scoring metrics to capture
 scoring = ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']
@@ -1253,35 +1248,34 @@ rf2.best_score_
 
 ```
 
-```         
-0.9648100662833985
-```
-
 ```{python rf2 result}
 
 # Get all CV scores
 rf2_cv_results = make_results('Random Forest 2 CV', rf2, 'auc')
 results = pd.concat([dtree1_cv_results,dtree2_cv_results,rf1_cv_results,rf2_cv_results], axis=0)
-results.reset_index(drop=True, inplace=True).style.set_table_attributes("class='table table-sm'")
+results.reset_index(drop=True, inplace=True)
+results.style.set_table_attributes("class='table table-sm'")
 
 ```
+
+The `Random Forest 2 CV` model balanced performance across all metrics,
+but slightly underperforms compared to `Random Forest 1 CV` and slightly
+better than `Decision Tree 2 CV`, with scores being,
+
+-   Precision = 86.6%
+-   Recall = 87.9%
+-   F1-score = 87.2%
+-   Accuracy = 95.7%
+-   AUC = 0.964
 
 Based on the training results for the two rounds of Decision Tree and
 Random Forest Model,
 
--   Random Forest model performs well with ROC-AUC score as the deciding
-    metric. So Random Forest model is the winning model and the test can
+-   So `Random Forest 1 CV` model is the winning model and the test can
     now be used for prediction
+-   In general, `Random Forest` model performs well with ROC-AUC score
+    as the deciding metric.
 
-```{python rf2 ts}
-
-# Get predictions on test data
-rf2_test_scores = get_scores('Random Forest 2 Test', rf2, X_test, y_test)
-test_results = pd.concat([rf1_test_scores, rf2_test_scores], axis=0)
-test_results.reset_index(drop=True, inplace=True)
-test_results.style.set_table_attributes("class='table table-sm'")
-
-```
 Plotting a Confusion Matrix to visualize the model's predictions on the
 test set
 
@@ -1298,26 +1292,86 @@ disp.plot(values_format='');
 
 ```
 
+```{python rf2 ts}
+
+# Get predictions on test data
+rf2_test_scores = get_scores('Random Forest 2 Test', rf2, X_test, y_test)
+test_results = pd.concat([rf1_test_scores, rf2_test_scores], axis=0)
+test_results.reset_index(drop=True, inplace=True)
+test_results.style.set_table_attributes("class='table table-sm'")
+
+```
+
 A perfect model would yield all true negatives and true positives, and
-no false negatives or false positives. In this case, Model predicts more
-false positives than false negatives, which means that the employees are
-at risk of getting fired or leaving voluntarily but that is not the
-case. Although it still is a strong model for predicting the employees
-that stay
+no false negatives or false positives. The `Random Forest` models
+demonstrated strong performance on the test set. These results highlight
+the robustness and consistency of Random Forest classifiers in
+predicting employee outcomes.
+
+Comparing the two models, `Model 1 (baseline Random Forest)` outperforms
+`Model 2 (feature-engineered Random Forest)` in terms of precision,
+F1-score, accuracy, and AUC. While Model 2 shows a slight improvement in
+recall (0.90 vs 0.92), the drop in precision and overall performance
+metrics suggests that the current feature engineering may have
+introduced noise or redundant information rather than enhancing signal
+quality.
+
+In this case, the feature engineering did not improve model performance.
+Instead, it slightly degraded the classifier's ability to distinguish
+between classes. This highlights the importance of validating each
+feature transformation step, as not all feature engineering enhances
+model learning — it can also obscure useful signals or increase
+dimensionality unnecessarily.
+
+# Results and Evaluation
+
+## Logistic Regression
+
+``` {python logr results}
+
+report_logr.style.set_table_attributes("class='table table-sm'")
+
+```
+
+The model shows very low scores in the objective which is the importance
+to predict employees who will leave. The data shows 83% - 17% split and shows imbalance. The class distribution is imbalanced, with only 17% of the data representing employees who left. This imbalance may contribute to the model’s bias toward predicting that employees will stay.
+
+Based on the insights and limitations, it is worth exploring alternative classification models such as Decision Tree and Random Forest, which may handle non-linear relationships and imbalanced data more effectively, and potentially improve prediction of employee attrition.
+
+## Decision Tree
+
+```{python dt plots}
+
+# Get all CV scores
+dt_results = pd.concat([dtree1_cv_results,dtree2_cv_results], axis=0)
+dt_results.reset_index(drop=True, inplace=True)
+dt_results.style.set_table_attributes("class='table table-sm'")
+
+```
+
+`Decision Tree 1 (CV)` outperformed `Decision Tree 2 (CV)` across all evaluation metrics. It achieved a higher precision, recall, and F1 score, indicating better balance between false positives and false negatives. Additionally, it showed superior accuracy and AUC, suggesting a more robust overall classification performance.
 
 ### Plotting the Decision Tree
 
 ```{python dt2 plots1}
 
 # Plot the tree
-plt.figure(figsize=(85,20))
+plt.figure(figsize=(85,50))
 plot_tree(dtree2.best_estimator_, max_depth=6, fontsize=14, feature_names=X.columns, 
           class_names={0:'stayed', 1:'left'}, filled=True);
 plt.show()
 
+# Extract rules as plain text
+tree_rules = export_text(dtree2.best_estimator_, feature_names=list(X.columns), max_depth=6)
+print(tree_rules)
+
 ```
 
-#### Decision tree feature importance
+Simplified, readable form of the main logic in the tree:
+
+-   
+
+### Feature importance
 
 ```{python dt2 feature}
 
@@ -1334,22 +1388,6 @@ dtree2_importances.style.set_table_attributes("class='table table-sm'")
 
 ```
 
-|                      | gini_importance |
-|----------------------|-----------------|
-| last_eval            | 0.343958        |
-| #\_projects          | 0.343385        |
-| tenure               | 0.215681        |
-| overworked           | 0.093498        |
-| department_support   | 0.001142        |
-| salary               | 0.000910        |
-| department_sales     | 0.000607        |
-| department_technical | 0.000418        |
-| work_accident        | 0.000183        |
-| department_IT        | 0.000139        |
-| department_marketing | 0.000078        |
-
-</div>
-
 ```{python dt2 plots2}
 
 sns.barplot(data=dtree2_importances, x="gini_importance", y=dtree2_importances.index, orient='h')
@@ -1363,11 +1401,32 @@ plt.show()
 Feature importance plot for the decision tree model shows that
 `last_evaluation`, `#_project`, `tenure`, and `overworked` have the
 importance from high to the least which helps in predicting the outcome
-variable 'employee left'
+variable 'employee left'. In contrast, features like `department`,
+`salary`, and `work accident` contribute minimally to the prediction.
+This suggests that performance evaluation, workload, and time spent at
+the company are key factors influencing employee attrition.
 
-#### Random forest feature importance
+## Random forest 
 
-Now, plot the feature importances for the random forest model.
+```{python rf result}
+
+# Get all rf CV scores
+rf_results = pd.concat([rf1_cv_results,rf2_cv_results], axis=0)
+rf_results.reset_index(drop=True, inplace=True)
+rf_results.style.set_table_attributes("class='table table-sm'")
+
+# Get all rf test scores
+rf_test_results = pd.concat([rf1_test_scores, rf2_test_scores], axis=0)
+rf_test_results.reset_index(drop=True, inplace=True)
+rf_test_results.style.set_table_attributes("class='table table-sm'")
+
+```
+
+The `Random Forest 1` model consistently outperformed `Random Forest 2` across both cross-validation (CV) and test datasets. In cross-validation, `Random Forest 1` achieved a higher F1 score and accuracy compared to `Random Forest 2`. Similarly, in the test set, `Random Forest 1` yielded better performance with an F1 score and accuracy than `Random Forest 2`. The higher AUC values across both CV and test sets further confirm the superior classification performance of `Random Forest 1`.
+
+### Feature importance
+
+Now, plot the feature importance for the `Random Forest 2` model.
 
 ```{python rf feature plot}
 
@@ -1380,19 +1439,19 @@ ind = np.argpartition(rf2.best_estimator_.feature_importances_, -10)[-10:]
 # Get column labels of top 10 features 
 feat = X.columns[ind]
 
-# Filter `feat_impt` to consist of top 10 feature importances
+# Filter `feat_impt` to consist of top 10 feature importance
 feat_impt = feat_impt[ind]
 
 y_df = pd.DataFrame({"Feature":feat,"Importance":feat_impt})
 y_sort_df = y_df.sort_values("Importance")
 fig = plt.figure()
-ax1 = fig.add_subplot(111)
+ax = fig.add_subplot(111)
 
-y_sort_df.plot(kind='barh',ax=ax1,x="Feature",y="Importance")
+y_sort_df.plot(kind='barh', ax=ax, x="Feature", y="Importance")
 
-ax1.set_title("Random Forest: Important variables that have an impact in employees leaving", fontsize=14)
-ax1.set_ylabel("Feature")
-ax1.set_xlabel("Importance")
+ax.set_title("Random Forest 2: Important variables that have an impact in employees leaving", fontsize = 14)
+ax.set_ylabel("Feature")
+ax.set_xlabel("Importance")
 plt.show()
 
 ```
@@ -1400,91 +1459,26 @@ plt.show()
 Feature importance plot for the Random Forest is the same as the
 Decision Tree model - feature importance plot
 
-```         
-# pacE: Execute Stage
+## Comparing and Evaluating the Models
 
--   Interpret model performance and results
--   Share actionable steps with stakeholders
+```{python model result}
 
-✏ \## Recall evaluation metrics
+# Get all model scores
+all_models = [report_logr, dtree1_cv_results, dtree2_cv_results, rf1_cv_results, rf2_cv_results, rf1_test_scores, rf2_test_scores]
 
--   **AUC** is the area under the ROC curve; it's also considered the
-    probability that the model ranks a random positive example more
-    highly than a random negative example.
--   **Precision** measures the proportion of data points predicted as
-    True that are actually True, in other words, the proportion of
-    positive predictions that are true positives.
--   **Recall** measures the proportion of data points that are predicted
-    as True, out of all the data points that are actually True. In other
-    words, it measures the proportion of positives that are correctly
-    classified.
--   **Accuracy** measures the proportion of data points that are
-    correctly classified.
--   **F1-score** is an aggregation of precision and recall.
+model_results = pd.concat(all_models, axis=0)
+model_results.reset_index(drop=True, inplace=True)
+model_results.style.set_table_attributes("class='table table-sm'")
 
-💭 \### Reflect on these questions as you complete the executing stage.
-
--   What key insights emerged from your model(s)?
--   What business recommendations do you propose based on the models
-    built?
--   What potential recommendations would you make to your
-    manager/company?
--   Do you think your model could be improved? Why or why not? How?
--   Given what you know about the data and the models you were using,
-    what other questions could you address for the team?
--   What resources do you find yourself using as you complete this
-    stage? (Make sure to include the links.)
--   Do you have any ethical considerations in this stage?
-
-Double-click to enter your responses here.
 ```
 
-# Results and Evaluation
-
--   Interpret model
--   Evaluate model performance using metrics
--   Prepare results, visualizations, and actionable steps to share with
-    stakeholders
-
-## Summary of model results
-
-**Logistic Regression Model**
-
-Model's performance on the test set shows very low scores in the
-objective which is the importance to predict employees who will leave,
-
--   Precision = 79%
--   Recall = 83%
--   F1 score (weighted average) = 80%
--   Accuracy = 83%
-
-**Tree-based Machine Learning**
-
-After the feature engineering, on the test set, Random Forest Model
-outperformed the decision tree model
-
-Decision Tree model performs with,
-
--   Precision = 86%;
--   Recall = 90%;
--   F1-Score = 88%;
--   Accuracy = 96%; AUC = 96%
-
-Random Forest model performs with,
-
--   Precision = 87%;
--   Recall = 90%;
--   F1-Score = 88%;
--   Accuracy = 96%; AUC = 93%
-
-## Conclusion, Recommendations, Next Steps
+# Conclusion, Recommendations, Next Steps
 
 From the initial assessment, EDA and Visualization, the employees are
 overworked due to the poor company management. This is also confirmed
 with the model and feature importance
 
-**Following recommendations could be presented to the stakeholders for
-retaining the employees:**
+**Following recommendations could be presented to the stakeholders for retaining the employees:**
 
 -   Limiting or capping the number of projects that employees can work
     on.
@@ -1496,7 +1490,5 @@ retaining the employees:**
     scale to be balanced for rewarding employees who work hard or put in
     more effort.
 
-**Next Steps** - Having a structured method for getting employees
-evaluation and satisfaction score before the employee leaves the
-company, as this might tend to data leakage. This might help in
-mitigating this issues and will help improve the model's performance
+**Next Steps** 
+Having a structured method for getting employees evaluation and satisfaction score before the employee leaves the company, as this might tend to data leakage. This might help in mitigating this issues and will help improve the model's performance. 
