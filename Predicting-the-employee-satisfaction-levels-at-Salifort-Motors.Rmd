@@ -773,6 +773,9 @@ row_names = ['Predicted would not leave', 'Predicted would leave']
 # Generate report as dict
 report_logr = classification_report(y_test, y_pred, target_names = row_names, output_dict=True)
 
+# Choose averaging strategy 
+# Extract metrics
+avg_type = 'weighted avg'
 precision = report_logr[avg_type]['precision']
 recall = report_logr[avg_type]['recall']
 f1 = report_logr[avg_type]['f1-score']
