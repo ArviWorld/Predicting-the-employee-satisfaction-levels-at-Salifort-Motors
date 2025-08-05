@@ -31,7 +31,7 @@ editor_options:
 5.  [Machine Learning Model - After Feature
     Engineering](#machine-learning-model-after-feature-engineering)
 6.  [Results & Discussion](#results-&-discussions)
-7.  [Conclusion](#conclusion)
+7.  [Conclusion, Recommendations & Next Steps](#conclusion)
 
 # Statements {#statements .unnumbered}
 
@@ -45,9 +45,9 @@ the Machine Learning Concepts.
 
 **Use of generative artificial intelligence**\
 Generative artificial intelligence (GenAI) was mainly used for creating
-charts and adjusting visualization parameters in {python}. GenAI was
-also used for code debugging. However, the responses provided by GenAI
-were critically judged before being implemented.
+charts and adjusting visualization parameters in Python. GenAI was also
+used for code debugging. However, the responses provided by GenAI were
+critically judged before being implemented.
 
 # Executive Summary {#executive-summary .unnumbered}
 
@@ -72,23 +72,39 @@ department and to build a model that predicts whether or not an employee
 will leave the company.
 
 **Raw data used**\
-This project uses a dataset called HR_capstone_dataset.csv. It
+This project uses a dataset called `HR_capstone_dataset.csv`. It
 represents 10 columns of self-reported information from employees of a
 fictitious multinational vehicle manufacturing corporation.
 
 **Methodology**\
-The following methodology was undertaken for this project, - Raw data -
-HR_capstone_dataset.csv from the HR department is used to assess the
-needs of the Senior leadership team.\
-- The merged data set is split into 70% training and 30% test data which
-is used to train and predict using machine learning models.\
-- Analysis such as confusion matrix, feature importance and scoring
-metrics is performed to analyse the models performance in predicting the
-employee satisfaction levels and the main factors influencing the
-employees to quit.
+The following methodology was undertaken for this project,
+
+-   Raw data - `HR_capstone_dataset.csv` from the HR department is used
+    to assess the needs of the Senior leadership team.
+-   The merged data set is split into 70% training and 30% test data
+    which is used to train and predict using machine learning models.
+-   For this project, `Logistic Regression`, `Decision Tree` and
+    `Random Forest` model were preformed to predict the employee
+    satisfaction level - Analysis such as confusion matrix, feature
+    importance and scoring metrics is performed to analyse the models
+    performance in predicting the employee satisfaction levels and the
+    main factors influencing the employees to quit.
 
 **Results**\
-Out of the models, .
+Out of the models trained to predict the employee satisfaction,
+`Random Forest` model outperforms other models in predicting the
+employee satisfaction at Salifort Motors. The project assessment and
+analysis revealed that employee disatisfaction at Salifort Motors is
+mainly driven by the company poor management, overwork and poor HR work
+policies.
+
+**Key recommendations**\
+Capping the number of projects per person, reviewing tenure-related
+dissatisfaction (especially at the four year mark), offering incentives
+for long working hours, HR department clarifying overtime work policies
+and implementing a balanced evaluation system. Suggessions to introduce
+structured feedback mechanisms prior to employee leaving to reduce data
+leakage.
 
 # Introduction {#introduction}
 
@@ -372,8 +388,8 @@ project.
 # Create a boxplot to visualize distribution of `tenure` and detect any outliers
 plt.figure(figsize=(16,6))
 plt.title('Detecting outliers for tenure (Boxplot)', fontsize=15)
-plt.xticks(fontsize=12)
-plt.yticks(fontsize=12)
+plt.xticks(fontsize=12);
+plt.yticks(fontsize=12);
 sns.boxplot(x=df1['tenure'])
 plt.show()
 
@@ -453,15 +469,15 @@ heatmap = sns.heatmap(
     vmax=1,
     annot=True,
     fmt=".2f",  # optional: format annotation
-    annot_kws={"size": 12},  # ← font size of annotation inside heatmap
+    annot_kws={"size": 16},  # ← font size of annotation inside heatmap
     cmap=sns.color_palette("vlag", as_cmap=True),
     cbar_kws={"shrink": 0.75, "label": "Correlation"}  # optional: color bar label
 )
 heatmap.set_title('Correlation Heatmap', fontdict={'fontsize':20}, pad=20);
 
 # Set x and y tick labels size
-heatmap.set_xticklabels(heatmap.get_xticklabels(), rotation=45, ha='right', fontsize=14)
-heatmap.set_yticklabels(heatmap.get_yticklabels(), fontsize=14)
+heatmap.set_xticklabels(heatmap.get_xticklabels(), rotation=45, ha='right', fontsize=18)
+heatmap.set_yticklabels(heatmap.get_yticklabels(), fontsize=18)
 plt.tight_layout()
 plt.show()
 
@@ -484,14 +500,14 @@ fig, ax = plt.subplots(1, 2, figsize = (20,8))
 tenure_stay = df1[df1['left']==0]['tenure']
 tenure_left = df1[df1['left']==1]['tenure']
 sns.histplot(data=df1, x='tenure', hue='left', multiple='dodge', shrink=5, ax=ax[0])
-ax[0].set_title('Tenure distribution classified by employee who left', fontsize=14)
+ax[0].set_title('Tenure distribution classified by employee who left', fontsize=18)
 
 
 # Tenure vs Satisfaction
 sns.boxplot(data=df1, x='satisfaction', y='tenure', hue='left', orient="h", saturation=0.75, ax=ax[1])
 ax[1].legend(loc='upper left', title='Left')
 ax[1].invert_yaxis()
-ax[1].set_title('Satisfaction vs Tenure', fontsize=14)
+ax[1].set_title('Satisfaction vs Tenure', fontsize=18)
 
 plt.show()
 ```
@@ -517,14 +533,14 @@ fig, ax = plt.subplots(1, 2, figsize = (20,8))
 projects_stay = df1[df1['left']==0]['#_projects']
 projects_left = df1[df1['left']==1]['#_projects']
 sns.histplot(data=df1, x='#_projects', hue='left', multiple='dodge', shrink=5, ax=ax[0])
-ax[0].set_title('No of projects distribution classified by employee who left', fontsize=14)
+ax[0].set_title('No of projects distribution classified by employee who left', fontsize=18)
 
 
 # #_project vs avg_mon_hrs
 sns.boxplot(data=df1, x='avg_mon_hrs', y='#_projects', hue='left', orient="h",saturation=0.75, ax=ax[1])
 ax[1].legend(loc='upper left', title='Left')
 ax[1].invert_yaxis()
-ax[1].set_title('Average monthly hours by No of project', fontsize=14)
+ax[1].set_title('Average monthly hours by No of project', fontsize=18)
 plt.show()
 ```
 
@@ -559,7 +575,7 @@ sns.boxplot(data=df1, x='satisfaction', y='salary', hue='left',
             orient="h", saturation=0.75, ax=ax[0])
 ax[0].invert_yaxis()
 ax[0].legend(loc='upper left', title='Left')
-ax[0].set_title('Satisfaction vs Salary', fontsize=14)
+ax[0].set_title('Satisfaction vs Salary', fontsize=18)
 
 # Plot for satisfaction vs avg_mon_hrs
 sns.scatterplot(data=df1, x='satisfaction', y='avg_mon_hrs', hue='left', alpha=0.4, ax=ax[1])
@@ -590,11 +606,11 @@ fig, ax = plt.subplots(1, 2, figsize = (20,8))
 
 # Plot for avg_mon_hrs vs promotion_<5yrs
 sns.scatterplot(data=df1, x='avg_mon_hrs', y='promotion_<5yrs', hue='left', ax=ax[0])
-ax[0].set_title('Average monthly hours by promotion in the last 5 years', fontsize=14)
+ax[0].set_title('Average monthly hours by promotion in the last 5 years', fontsize=18)
 
 # Plot for avg_mon_hrs vs last_eval
 sns.scatterplot(data=df1, x='avg_mon_hrs', y='last_eval', hue='left', alpha=0.4, ax=ax[1])
-ax[1].set_title('Average monthly hours by evaluation score', fontsize=14)
+ax[1].set_title('Average monthly hours by evaluation score', fontsize=18)
 
 ```
 
@@ -619,7 +635,7 @@ Based on the plot,
 plt.figure(figsize=(13,10))
 sns.histplot(data=df1, x='department', hue='left', discrete=1, 
              hue_order=[0, 1], multiple='dodge', shrink=.5)
-plt.title('Employees distribution classified by department', fontsize=14)
+plt.title('Employees distribution classified by department', fontsize=18)
 
 plt.show()
 
@@ -788,12 +804,12 @@ auc = roc_auc_score(y_test, y_proba)
 
 # Create the row
 summary_row = {
-    'model': 'Logistic Regression',
-    'precision': round(precision, 6),
-    'recall': round(recall, 6),
+    'Model': 'Logistic Regression',
+    'Precision': round(precision, 6),
+    'Recall': round(recall, 6),
     'F1': round(f1, 6),
-    'accuracy': round(accuracy, 6),
-    'auc': round(auc, 6)
+    'Accuracy': round(accuracy, 6),
+    'AUC': round(auc, 6)
 }
 
 # Convert to DataFrame
@@ -810,7 +826,7 @@ report_logr.style.set_table_attributes("class='table table-sm'")
 -   Accuracy = 83%
 
 The model shows very low scores in the objective which is the importance
-to predict employees who will leave. 
+to predict employees who will leave.
 
 ## Tree-based Model - Decision Tree & Random Forest
 
@@ -1015,9 +1031,8 @@ Based on the model training results,
 
 -   `Random Forest` Model scores better than the Decision Tree, achieved
     higher precision, F1-score, accuracy, and AUC.
--   `Random Forest` Random Forest helps reduce overfitting, a known
-    issue with standalone Decision Trees and improving predictive
-    reliability.
+-   `Random Forest` helps reduce overfitting, a known issue with
+    standalone Decision Trees and improving predictive reliability.
 -   `Random Forest` Model performs well than the Decision Tree and the
     test set can be evaluated using the Random Forest.
 
@@ -1072,13 +1087,6 @@ test set, achieving high scores across key metrics such as,
 -   F1-score = 94%
 -   Accuracy = 98.1%
 -   AUC = 0.97
-
-Test results are similar and slightly higher to the training results,
-which shows that the model is very good. Scores on precision, recall and
-F1-score effectively balances both false positive and false negatives
-and accuracy and AUC indicating excellent discriminatory power between
-the class. The model's performance will be similar when new unseen data
-is fitted, as the test data was used only for this model.
 
 Round 1 Models included all the variables as features for the model
 prediction. For the Round 2 Models, Feature engineering will be used to
@@ -1161,7 +1169,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, strati
 
 ```
 
-### Decision Tree 2
+## Decision Tree 2
 
 ```{python dt2 train}
 
@@ -1214,7 +1222,7 @@ slightly underperforms compared to both `Decision Tree 1 CV` and
 -   Accuracy = 95.9%
 -   AUC = 0.96
 
-### Random Forest 2
+## Random Forest 2
 
 ```{python rf2 train}
 
@@ -1271,14 +1279,6 @@ better than `Decision Tree 2 CV`, with scores being,
 -   Accuracy = 95.7%
 -   AUC = 0.964
 
-Based on the training results for the two rounds of Decision Tree and
-Random Forest Model,
-
--   So `Random Forest 1 CV` model is the winning model and the test can
-    now be used for prediction
--   In general, `Random Forest` model performs well with ROC-AUC score
-    as the deciding metric.
-
 Plotting a Confusion Matrix to visualize the model's predictions on the
 test set
 
@@ -1305,41 +1305,43 @@ test_results.style.set_table_attributes("class='table table-sm'")
 
 ```
 
-A perfect model would yield all true negatives and true positives, and
-no false negatives or false positives. The `Random Forest` models
-demonstrated strong performance on the test set. These results highlight
-the robustness and consistency of Random Forest classifiers in
-predicting employee outcomes.
+Based on the training results for the two rounds of Decision Tree and
+Random Forest Model,
 
-Comparing the two models, `Model 1 (baseline Random Forest)` outperforms
-`Model 2 (feature-engineered Random Forest)` in terms of precision,
-F1-score, accuracy, and AUC. While Model 2 shows a slight improvement in
-recall (0.90 vs 0.92), the drop in precision and overall performance
-metrics suggests that the current feature engineering may have
-introduced noise or redundant information rather than enhancing signal
-quality.
+-   So `Random Forest 1 CV` model is the winning model and the test can
+    now be used for prediction
+-   In general, `Random Forest` model performs well with ROC-AUC score
+    as the deciding metric.
 
-In this case, the feature engineering did not improve model performance.
-Instead, it slightly degraded the classifier's ability to distinguish
-between classes. This highlights the importance of validating each
-feature transformation step, as not all feature engineering enhances
-model learning — it can also obscure useful signals or increase
-dimensionality unnecessarily.
+# Results and Discussion
 
-# Results and Evaluation
+This section presents the results of various machine learning models
+applied to predict employee satisfaction at Salifort Motors. By
+evaluating different classifiers—ranging from logistic regression to
+ensemble methods—on cross-validation and test sets, we aim to identify
+the most accurate and reliable model for understanding the key drivers
+of employee satisfaction. The findings not only highlight model
+performance but also offer actionable insights into workforce dynamics
+and factors influencing satisfaction levels within the organization.
 
 ## Logistic Regression
 
-``` {python logr results}
+```{python logr results}
 
 report_logr.style.set_table_attributes("class='table table-sm'")
 
 ```
 
 The model shows very low scores in the objective which is the importance
-to predict employees who will leave. The data shows 83% - 17% split and shows imbalance. The class distribution is imbalanced, with only 17% of the data representing employees who left. This imbalance may contribute to the model’s bias toward predicting that employees will stay.
+to predict employees who will leave. The data shows 83% - 17% split and
+shows imbalance. The class distribution is imbalanced, with only 17% of
+the data representing employees who left. This imbalance may contribute
+to the model’s bias toward predicting that employees will stay.
 
-Based on the insights and limitations, it is worth exploring alternative classification models such as Decision Tree and Random Forest, which may handle non-linear relationships and imbalanced data more effectively, and potentially improve prediction of employee attrition.
+Based on the insights and limitations, it is worth exploring alternative
+classification models such as Decision Tree and Random Forest, which may
+handle non-linear relationships and imbalanced data more effectively,
+and potentially improve prediction of employee attrition.
 
 ## Decision Tree
 
@@ -1352,27 +1354,11 @@ dt_results.style.set_table_attributes("class='table table-sm'")
 
 ```
 
-`Decision Tree 1 (CV)` outperformed `Decision Tree 2 (CV)` across all evaluation metrics. It achieved a higher precision, recall, and F1 score, indicating better balance between false positives and false negatives. Additionally, it showed superior accuracy and AUC, suggesting a more robust overall classification performance.
-
-### Plotting the Decision Tree
-
-```{python dt2 plots1}
-
-# Plot the tree
-plt.figure(figsize=(85,50))
-plot_tree(dtree2.best_estimator_, max_depth=6, fontsize=14, feature_names=X.columns, 
-          class_names={0:'stayed', 1:'left'}, filled=True);
-plt.show()
-
-# Extract rules as plain text
-tree_rules = export_text(dtree2.best_estimator_, feature_names=list(X.columns), max_depth=6)
-print(tree_rules)
-
-```
-
-Simplified, readable form of the main logic in the tree:
-
--   
+`Decision Tree 1 (CV)` outperformed `Decision Tree 2 (CV)` across all
+evaluation metrics. It achieved a higher precision, recall, and F1
+score, indicating better balance between false positives and false
+negatives. Additionally, it showed superior accuracy and AUC, suggesting
+a more robust overall classification performance.
 
 ### Feature importance
 
@@ -1409,7 +1395,87 @@ variable 'employee left'. In contrast, features like `department`,
 This suggests that performance evaluation, workload, and time spent at
 the company are key factors influencing employee attrition.
 
-## Random forest 
+### Plotting the Decision Tree
+
+```{python dt2 plots1}
+
+# Plot the tree
+plt.figure(figsize=(85,50))
+plot_tree(dtree2.best_estimator_, max_depth=6, fontsize=14, feature_names=X.columns, 
+          class_names={0:'stayed', 1:'left'}, filled=True);
+plt.show()
+
+# Extract rules as plain text
+tree_rules = export_text(dtree2.best_estimator_, feature_names=list(X.columns), max_depth=6)
+print(tree_rules)
+
+```
+
+This decision tree uses several key features to classify employees as
+satisfied (class: 0) or unsatisfied (class: 1). The most influential
+variables include:
+
+1.  **Number of Projects (#\_projects)\
+    **If ≤ 2.5 projects:
+
+    -   Most employees are satisfied, especially when:
+        -   Their last evaluation is low (≤ 0.44),
+        -   They are not overworked,
+        -   Their tenure is short (≤ 2.5 years).
+    -   A small group becomes unsatisfied if they have 3-year tenure and
+        a slightly higher evaluation (\> 0.44).
+
+    If \> 2.5 projects:
+
+    -   Satisfaction largely depends on tenure, overwork status, and
+        evaluation scores:
+        -   Employees with many projects and longer tenure are usually
+            satisfied, unless:
+            -   They are overworked,
+            -   Or have very high evaluation scores and specific project
+                counts (e.g., \> 6.5 projects).
+
+2.  **Last Evaluation (last_eval)**
+
+    A strong factor throughout the tree:
+
+    -   Low scores (≤ 0.57) often correlate with satisfaction,
+        especially with fewer projects.
+    -   Extremely high scores (\> 1.0) may indicate unsatisfied
+        employees, particularly with low salary.
+
+3.  **Overworked**
+
+-   Overwork is consistently linked to employee dissatisfaction,
+    especially among those with few projects and low evaluation scores.
+-   Among overworked staff, those in Sales or Support departments, with
+    mid-to-high evaluations, can show dissatisfaction.
+
+4.  **Tenure**
+
+-   Specific tenure groups (notably around 3 to 4 years) show higher
+    risk of dissatisfaction, especially if paired with moderate
+    evaluations and overwork.
+-   Employees with short (\<3 years) or long (\>5 years) tenure are
+    typically more satisfied.
+
+5.  **Department and Salary Department plays a secondary role:**
+
+-   Sales, IT, Support, and Technical departments appear frequently in
+    branches where classification decisions are made.
+-   Low salary, especially with very high evaluations, can lead to
+    dissatisfaction.
+
+**Key Patterns**
+
+-   Employees with low workload, low evaluations, and short tenure are
+    most likely to be satisfied.
+-   Overworked employees, especially those with 3-4 years tenure and
+    mid-high evaluations, are at higher risk of dissatisfaction.
+-   Very high evaluation scores, low salary, and high project loads
+    (\>6) can sometimes flag discontent.
+
+## Random forest
 
 ```{python rf result}
 
@@ -1425,7 +1491,35 @@ rf_test_results.style.set_table_attributes("class='table table-sm'")
 
 ```
 
-The `Random Forest 1` model consistently outperformed `Random Forest 2` across both cross-validation (CV) and test datasets. In cross-validation, `Random Forest 1` achieved a higher F1 score and accuracy compared to `Random Forest 2`. Similarly, in the test set, `Random Forest 1` yielded better performance with an F1 score and accuracy than `Random Forest 2`. The higher AUC values across both CV and test sets further confirm the superior classification performance of `Random Forest 1`.
+A perfect model would yield all true negatives and true positives, and
+no false negatives or false positives. The `Random Forest` models
+demonstrated strong performance on the test set. These results highlight
+the robustness and consistency of Random Forest classifiers in
+predicting employee outcomes.
+
+Comparing the two models, `Model 1 (baseline Random Forest)` outperforms
+`Model 2 (feature-engineered Random Forest)` in terms of precision,
+F1-score, accuracy, and AUC. While Model 2 shows a slight improvement in
+recall, the drop in precision and overall performance
+metrics suggests that the current feature engineering may have
+introduced noise or redundant information rather than enhancing signal
+quality.
+
+In this case, the feature engineering did not improve model performance.
+Instead, it slightly degraded the classifier's ability to distinguish
+between classes. This highlights the importance of validating each
+feature transformation step, as not all feature engineering enhances
+model learning — it can also obscure useful signals or increase
+dimensionality unnecessarily.
+
+The `Random Forest 1` model consistently outperformed `Random Forest 2`
+across both cross-validation (CV) and test datasets. In
+cross-validation, `Random Forest 1` achieved a higher F1 score and
+accuracy compared to `Random Forest 2`. Similarly, in the test set,
+`Random Forest 1` yielded better performance with an F1 score and
+accuracy than `Random Forest 2`. The higher AUC values across both CV
+and test sets further confirm the superior classification performance of
+`Random Forest 1`.The `Random Forest` model's performance will be similar when new unseen data is fitted, as the test data was used only for this model.
 
 ### Feature importance
 
@@ -1469,19 +1563,56 @@ Decision Tree model - feature importance plot
 # Get all model scores
 all_models = [report_logr, dtree1_cv_results, dtree2_cv_results, rf1_cv_results, rf2_cv_results, rf1_test_scores, rf2_test_scores]
 
-model_results = pd.concat(all_models, axis=0)
-model_results.reset_index(drop=True, inplace=True)
+model_results = pd.concat(all_models, axis = 0)
+model_results.reset_index(drop = True, inplace = True)
 model_results.style.set_table_attributes("class='table table-sm'")
+
+# Model comparison visualization
+model_results_melted = model_results.melt(id_vars = 'Model', var_name = 'Metric', value_name = 'Score')
+
+# Plot
+plt.figure(figsize=(16, 10))
+sns.barplot(data = model_results_melted, x = 'Metric', y = 'Score', hue = 'Model')
+plt.title('Model Performance Comparison')
+plt.ylim(0.75, 1.0);
+plt.legend(bbox_to_anchor = (1.05, 1), loc = 'upper left');
+plt.tight_layout()
+plt.show()
 
 ```
 
-# Conclusion, Recommendations, Next Steps
+**Outcome of the Results**\
+The `Random Forest` model (Test Set) clearly outperforms all other approaches in predicting employee satisfaction, achieving:
 
+*Precision:* 96.42%
+*F1-score:* 94.14%
+*Accuracy:* 98.10%
+
+This suggests that the model is not only accurate but also balanced in identifying both satisfied and unsatisfied employees with minimal false positives and false negatives.
+
+**Insights**\
+`Random Forest` is the most reliable model:
+
+-   It handles feature interactions and non-linearities well, making it     a robust choice for complex, real-world data like employee              satisfaction.
+
+Its high performance on the test set also indicates good generalization to unseen employee data.
+
+**`Decision Tree (CV)` and `Random Forest (CV)` also show strong performance:**\
+With F1-scores over 91% and AUC scores over 96%, these models are effective in cross-validated settings, suggesting that even simpler tree-based models are insightful.
+
+**`Logistic Regression` is less effective:**\
+While it's interpretable, its performance lags behind ensemble methods, likely due to its linear nature and limited capacity to model complex relationships.
+
+**Model selection implications:**\
+For business decision-making, `Random Forest` offers the best balance between precision and recall, helping HR departments accurately identify which employees are at risk of dissatisfaction. This allows for targeted interventions, retention strategies, and improved employee engagement.
+
+# Conclusion, Recommendations & Next Steps
 From the initial assessment, EDA and Visualization, the employees are
 overworked due to the poor company management. This is also confirmed
-with the model and feature importance
+with the model and feature importance. The modeling efforts successfully demonstrate that employee satisfaction at Salifort Motors can be predicted with high accuracy using advanced machine learning methods, particularly `Random Forest`. These insights can empower HR leaders to proactively enhance workplace satisfaction and reduce turnover.
 
-**Following recommendations could be presented to the stakeholders for retaining the employees:**
+**Following recommendations could be presented to the stakeholders for
+retaining the employees:**
 
 -   Limiting or capping the number of projects that employees can work
     on.
@@ -1493,5 +1624,7 @@ with the model and feature importance
     scale to be balanced for rewarding employees who work hard or put in
     more effort.
 
-**Next Steps** 
-Having a structured method for getting employees evaluation and satisfaction score before the employee leaves the company, as this might tend to data leakage. This might help in mitigating this issues and will help improve the model's performance. 
+**Next Steps** Having a structured method for getting employees
+evaluation and satisfaction score before the employee leaves the
+company, as this might tend to data leakage. This might help in
+mitigating this issues and will help improve the model's performance.
