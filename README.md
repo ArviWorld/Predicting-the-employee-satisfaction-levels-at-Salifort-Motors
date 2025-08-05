@@ -1,4 +1,4 @@
-# Predicting-the-employee-satisfaction-levels-at-Salisfort-Motors
+# Predicting the employee satisfaction levels at Salisfort Motors
 
 **A Machine Learning Approach to HR Analytics in R**
 
