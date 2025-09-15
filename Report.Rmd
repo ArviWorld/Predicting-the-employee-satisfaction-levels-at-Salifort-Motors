@@ -40,7 +40,7 @@ I am sincerely thank my parents and family for giving me the support and
 opportunity to invest my time on learning Machine Learning and
 Artificial Intelligence to apply in environmental management work.
 Furthermore, I thank the Google Career Certification courses for
-providing me the resources to learn {python} Programming and learn about
+providing me the resources to learn python Programming and learn about
 the Machine Learning Concepts.
 
 **Use of generative artificial intelligence**\
