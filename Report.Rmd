@@ -36,7 +36,7 @@ editor_options:
 # Statements {#statements .unnumbered}
 
 **Acknowledgement**\
-I am sincerely thank my parents and family for giving me the support and
+I sincerely thank my parents and family for giving me the support and
 opportunity to invest my time on learning Machine Learning and
 Artificial Intelligence to apply in environmental management work.
 Furthermore, I thank the Google Career Certification courses for
